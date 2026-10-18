@@ -1,0 +1,67 @@
+#version 460 core
+
+#include "common/noise.glsl"
+
+// Builds the shared tileable 3D noise volume (see Resources::noiseVolume):
+//   R: value-noise fbm (soft, cloudy)      G: inverted Worley fbm (billowy, cellular)
+// Every octave uses a period that divides the volume, so the texture repeats seamlessly (sample with REPEAT).
+
+layout(local_size_x = 8, local_size_y = 8, local_size_z = 8) in;
+layout(rg8, binding = 0) uniform writeonly image3D uOutput;
+uniform int uSize;
+
+uint cellHash(ivec3 cell, int period, uint seed) {
+    cell = ((cell % period) + period) % period;
+    return pcgHash(uint(cell.x) + pcgHash(uint(cell.y) + pcgHash(uint(cell.z) + seed)));
+}
+
+float cellRandom(ivec3 cell, int period, uint seed) { return float(cellHash(cell, period, seed)) / 4294967295.0; }
+
+float tiledValueNoise(vec3 p, int period, uint seed) {
+    ivec3 i = ivec3(floor(p));
+    vec3 f = fract(p);
+    vec3 u = f * f * (3.0 - 2.0 * f);
+    float n000 = cellRandom(i, period, seed);
+    float n100 = cellRandom(i + ivec3(1, 0, 0), period, seed);
+    float n010 = cellRandom(i + ivec3(0, 1, 0), period, seed);
+    float n110 = cellRandom(i + ivec3(1, 1, 0), period, seed);
+    float n001 = cellRandom(i + ivec3(0, 0, 1), period, seed);
+    float n101 = cellRandom(i + ivec3(1, 0, 1), period, seed);
+    float n011 = cellRandom(i + ivec3(0, 1, 1), period, seed);
+    float n111 = cellRandom(i + ivec3(1, 1, 1), period, seed);
+    return mix(mix(mix(n000, n100, u.x), mix(n010, n110, u.x), u.y), mix(mix(n001, n101, u.x), mix(n011, n111, u.x), u.y), u.z);
+}
+
+// Distance to the nearest feature point (one per cell), in cell units.
+float tiledWorley(vec3 p, int period, uint seed) {
+    ivec3 i = ivec3(floor(p));
+    float nearest = 1.0;
+    for (int z = -1; z <= 1; ++z)
+        for (int y = -1; y <= 1; ++y)
+            for (int x = -1; x <= 1; ++x) {
+                ivec3 cell = i + ivec3(x, y, z);
+                vec3 feature = vec3(cell) + vec3(cellRandom(cell, period, seed), cellRandom(cell, period, seed + 1u),
+                                                 cellRandom(cell, period, seed + 2u));
+                nearest = min(nearest, length(p - feature));
+            }
+    return nearest;
+}
+
+void main() {
+    ivec3 voxel = ivec3(gl_GlobalInvocationID);
+    if (any(greaterThanEqual(voxel, ivec3(uSize)))) return;
+    vec3 p = (vec3(voxel) + 0.5) / float(uSize);  // [0, 1) across the volume
+
+    float value = 0.0, amplitude = 0.5, total = 0.0;
+    for (int octave = 0; octave < 5; ++octave) {
+        int period = 4 << octave;
+        value += amplitude * tiledValueNoise(p * float(period), period, uint(octave) * 17u);
+        total += amplitude;
+        amplitude *= 0.5;
+    }
+    value /= total;
+
+    float worley = tiledWorley(p * 4.0, 4, 101u) * 0.625 + tiledWorley(p * 8.0, 8, 202u) * 0.25 +
+                   tiledWorley(p * 16.0, 16, 303u) * 0.125;
+    imageStore(uOutput, voxel, vec4(value, clamp(1.0 - worley, 0.0, 1.0), 0.0, 0.0));
+}

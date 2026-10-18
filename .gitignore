@@ -1,0 +1,46 @@
+# --- Build output (CMake presets, vcpkg) ---
+build/
+out/
+vcpkg_installed/
+CMakeUserPresets.json
+
+# --- Packaged distribution (regenerate with .\package.ps1) ---
+dist/
+
+# --- Compiled / intermediate binaries, in case any land outside build/ ---
+*.exe
+*.dll
+*.lib
+*.pdb
+*.ilk
+*.obj
+*.exp
+*.idb
+*.ipch
+*.zip
+
+# --- Runtime output ---
+screenshot_*.png
+*.log
+
+# --- IDE / editor ---
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.sln.docstates
+
+# --- Claude Code / tooling local state ---
+.claude/settings.local.json
+graphify-out/
+
+# --- OS junk ---
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+*.tmp
+*.bak
+*~

@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Space Travel — Art Book</title>
+<style>
+  @page { size: 297mm 210mm; margin: 0; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #05050a; }
+  body {
+    font-family: "Segoe UI", "Segoe UI Variable", Arial, sans-serif;
+    color: #d9dbe6; font-size: 9.6pt; line-height: 1.45;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+    counter-reset: folio;
+  }
+  .page {
+    width: 297mm; height: 210mm; position: relative; overflow: hidden;
+    page-break-after: always; break-after: page;
+    background: radial-gradient(ellipse at 80% 0%, #15102a 0%, #07070d 55%, #040408 100%);
+    counter-increment: folio;
+  }
+  .page:last-child { page-break-after: auto; break-after: auto; }
+  .folio {
+    position: absolute; right: 12mm; bottom: 7mm; font-family: Bahnschrift, "Segoe UI", sans-serif;
+    font-size: 7.5pt; letter-spacing: 0.25em; color: #7b7f99;
+  }
+  .folio::after { content: counter(folio); color: #c9a8ff; margin-left: 2mm; }
+  h1, h2, h3, .kicker, .num {
+    font-family: Bahnschrift, "Segoe UI Semibold", sans-serif; font-weight: 600; margin: 0;
+  }
+  .kicker { font-size: 7.5pt; letter-spacing: 0.35em; text-transform: uppercase; color: #8fd8ff; }
+  h2 { font-size: 22pt; letter-spacing: 0.06em; text-transform: uppercase; color: #fff; line-height: 1.05; }
+  h3 { font-size: 10pt; letter-spacing: 0.18em; text-transform: uppercase; color: #ffb7e8; margin: 0 0 1.5mm; }
+  p { margin: 0 0 2.2mm; }
+  ul { margin: 0 0 2.2mm; padding-left: 4.5mm; }
+  li { margin-bottom: 1mm; }
+  b, strong { color: #fff; font-weight: 600; }
+  em { color: #c9a8ff; font-style: normal; }
+  .accent { background: linear-gradient(90deg, #ff5fc8, #8a7dff 50%, #4fd9ff); height: 0.7mm; width: 46mm; margin: 3mm 0 4mm; }
+
+  /* Full-bleed hero pages */
+  .hero { background: #000; }
+  .hero img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .hero .shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(0,0,0,0.82) 100%); }
+  .hero .caption { position: absolute; left: 14mm; bottom: 12mm; right: 90mm; }
+  .hero .num { font-size: 40pt; color: rgba(255,255,255,0.18); line-height: 0.8; letter-spacing: 0.04em; }
+  .hero h2 { font-size: 30pt; text-shadow: 0 0 6mm rgba(0,0,0,0.7); }
+  .hero .tagline { margin-top: 2mm; font-size: 11pt; color: #e6e1ff; max-width: 170mm; text-shadow: 0 0 3mm #000; }
+  .hero .folio { color: #9aa0bd; }
+
+  /* Technical pages */
+  .tech { padding: 11mm 13mm 12mm; display: flex; flex-direction: column; gap: 4mm; }
+  .tech header { display: flex; align-items: baseline; gap: 5mm; }
+  .tech header .num { font-size: 20pt; color: #4fd9ff; }
+  .tech header h2 { font-size: 17pt; }
+  .thumbs { display: flex; gap: 4mm; height: 58mm; }
+  .thumbs figure { margin: 0; flex: 1; position: relative; border-radius: 1.2mm; overflow: hidden; }
+  .thumbs figure { flex: 0 1 103mm; }
+  .pull {
+    flex: 1; display: flex; align-items: center; padding: 0 4mm 0 7mm; border-left: 0.6mm solid #8a7dff;
+    font-family: Bahnschrift, "Segoe UI", sans-serif; font-size: 15pt; line-height: 1.25; color: #e8ddff; letter-spacing: 0.02em;
+  }  .thumbs img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .thumbs figcaption {
+    position: absolute; left: 0; right: 0; bottom: 0; padding: 1.2mm 2mm; font-size: 7pt; color: #e8e8f2;
+    background: linear-gradient(0deg, rgba(0,0,0,0.75), rgba(0,0,0,0));
+  }
+  .cols { display: grid; grid-template-columns: 1fr 1.12fr; gap: 7mm; flex: 1; min-height: 0; }
+  .cols.wide-code { grid-template-columns: 0.9fr 1.3fr; }
+  pre.code {
+    margin: 0; padding: 3.5mm 4mm; background: rgba(10, 12, 26, 0.92); border: 0.25mm solid #232845;
+    border-left: 1mm solid #8a7dff; border-radius: 1.2mm; font-family: "Cascadia Mono", "Cascadia Code", Consolas, monospace;
+    font-size: 7.4pt; line-height: 1.42; color: #cfd6ff; white-space: pre-wrap; overflow: hidden;
+  }
+  pre.code .c { color: #6d7398; }
+  pre.code .k { color: #ff9ad8; }
+  pre.code .f { color: #7fe3ff; }
+  .knobs { margin-top: 2mm; font-size: 7.6pt; color: #9ea3c2; }
+  .knobs span { display: inline-block; margin: 0 1.5mm 1mm 0; padding: 0.3mm 1.6mm; border: 0.2mm solid #343a63; border-radius: 3mm; color: #c9cdf0; }
+
+  /* Front matter */
+  .cover .title { position: absolute; left: 16mm; top: 20mm; }
+  .cover .title .kicker { font-size: 9pt; }
+  .cover .title h1 { font-size: 64pt; letter-spacing: 0.08em; color: #fff; text-transform: uppercase; line-height: 0.95; text-shadow: 0 0 10mm rgba(0,0,0,0.8); }
+  .cover .title .sub { font-size: 13pt; color: #e8ddff; margin-top: 3mm; text-shadow: 0 0 4mm #000; }
+  .cover .credit { position: absolute; left: 16mm; bottom: 12mm; font-size: 8.5pt; color: #cfd3ea; letter-spacing: 0.2em; text-transform: uppercase; }
+  .text-page { padding: 16mm 18mm; }
+  .two { display: grid; grid-template-columns: 1.05fr 1fr; gap: 12mm; }
+  .toc { columns: 2; column-gap: 8mm; font-size: 9pt; margin-top: 2mm; }
+  .toc div { break-inside: avoid; padding: 1mm 0; border-bottom: 0.2mm solid #1f2340; display: flex; justify-content: space-between; }
+  .toc .n { color: #4fd9ff; font-family: Bahnschrift, sans-serif; margin-right: 3mm; }
+  .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm; margin-top: 4mm; }
+  .fact { padding: 3mm; border: 0.25mm solid #262b4d; border-radius: 1.2mm; background: rgba(15, 17, 34, 0.7); }
+  .fact .v { font-family: Bahnschrift, sans-serif; font-size: 16pt; color: #fff; }
+  .fact .l { font-size: 7.5pt; color: #9aa0c0; text-transform: uppercase; letter-spacing: 0.12em; }
+
+  /* Pipeline diagram */
+  .pipeline { display: flex; align-items: stretch; gap: 2.5mm; margin: 4mm 0 5mm; }
+  .stage { flex: 1; padding: 2.5mm; border-radius: 1.2mm; background: rgba(18, 20, 40, 0.9); border: 0.25mm solid #2d3360; font-size: 7.6pt; }
+  .stage b { display: block; font-family: Bahnschrift, sans-serif; font-size: 8.5pt; color: #8fd8ff; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 1mm; }
+  .arrow { align-self: center; color: #8a7dff; font-size: 13pt; }
+  .full-img { width: 100%; border-radius: 1.2mm; display: block; }
+</style>
+</head>
+<body>
+
+<!-- ============================== COVER ============================== -->
+<section class="page hero cover">
+  <img src="images/blackhole-a.jpg" alt="">
+  <div class="shade" style="background: linear-gradient(180deg, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0) 70%, rgba(0,0,0,0.7) 100%);"></div>
+  <div class="title">
+    <div class="kicker">A real-time demo · art &amp; technique</div>
+    <h1>Space<br>Travel</h1>
+    <div class="sub">Fifteen scenes, one journey, zero art assets — everything you see is computed.</div>
+  </div>
+  <div class="credit">Direction &amp; design: blacklizard &nbsp;·&nbsp; Code: Claude &nbsp;·&nbsp; C++20 · OpenGL 4.6</div>
+</section>
+
+<!-- ============================== INTRODUCTION ============================== -->
+<section class="page text-page">
+  <div class="two">
+    <div>
+      <div class="kicker">Introduction</div>
+      <h2>A trip in the spirit of the demoscene</h2>
+      <div class="accent"></div>
+      <p><b>Space Travel</b> is a five-minute real-time journey in the tradition of the Amiga and PC demos of the
+      late 80s and 90s: a sequence of effects cut to the music, where the <em>coolness of the effect</em> and the
+      cleverness behind it matter more than physical accuracy.</p>
+      <p>It opens like a 1990 cracktro — copper bars, a chrome logo, a sine scroller — then leaves the screen behind:
+      parallax stars, a nebula of dust pillars, the jump to hyperspace, a giant star, an asteroid chase, a ringed
+      planet and a canyon on one of its moons, a fleet of capital ships, a supernova, a wormhole into another galaxy
+      and the black hole at its heart, before the credits roll on a cloud of vector balls.</p>
+      <p>Every pixel is <b>computed at run time</b>. There are no textures, models or samples on disk: rock and ship
+      meshes are generated at start-up, noise volumes are built by a compute shader, the font is drawn in code and
+      even the soundtrack is a ProTracker module synthesized in memory. Each scene reacts to the music through a
+      beat grid and per-instrument note timing.</p>
+      <p>This book walks through the scenes as images first, then opens the hood: for each effect, the idea behind
+      it and the algorithm in high-level pseudo-code, close to the GLSL that actually runs.</p>
+      <div class="facts">
+        <div class="fact"><div class="v">15</div><div class="l">scenes, ~5 minute loop</div></div>
+        <div class="fact"><div class="v">0</div><div class="l">art assets on disk</div></div>
+        <div class="fact"><div class="v">C++20 · GL 4.6</div><div class="l">SDL3, libopenmpt, Dear ImGui</div></div>
+        <div class="fact"><div class="v">880M</div><div class="l">designed for a laptop iGPU</div></div>
+      </div>
+    </div>
+    <div>
+      <div class="kicker">Contents</div>
+      <div class="accent" style="width: 20mm"></div>
+      <div class="toc">
+        <div><span><span class="n">00</span>The engine</span><span>3</span></div>
+        <div><span><span class="n">01</span>Intro</span><span>5</span></div>
+        <div><span><span class="n">02</span>Parallax stars</span><span>7</span></div>
+        <div><span><span class="n">03</span>Nebula crossing</span><span>9</span></div>
+        <div><span><span class="n">04</span>Warp</span><span>11</span></div>
+        <div><span><span class="n">05</span>Giant star</span><span>13</span></div>
+        <div><span><span class="n">06</span>Asteroid chase</span><span>15</span></div>
+        <div><span><span class="n">07</span>Ringed giant</span><span>17</span></div>
+        <div><span><span class="n">08</span>Canyon run</span><span>19</span></div>
+        <div><span><span class="n">09</span>Fleet jump-in</span><span>21</span></div>
+        <div><span><span class="n">10</span>Dreadnought</span><span>23</span></div>
+        <div><span><span class="n">11</span>Supernova</span><span>25</span></div>
+        <div><span><span class="n">12</span>Wormhole</span><span>27</span></div>
+        <div><span><span class="n">13</span>Galaxy</span><span>29</span></div>
+        <div><span><span class="n">14</span>Black hole</span><span>31</span></div>
+        <div><span><span class="n">15</span>End credits</span><span>33</span></div>
+        <div><span><span class="n">A</span>Techniques appendix</span><span>35</span></div>
+        <div><span><span class="n">B</span>Colophon</span><span>37</span></div>
+      </div>
+      <p style="margin-top: 6mm; color: #9aa0c0; font-size: 8.5pt;">All images in this book are frames of the demo,
+      captured by the program itself at chosen beats of the timeline (<em>--capture --time</em>), at 1920×1080,
+      with the final post-processing — bloom, chromatic aberration, tone mapping and film grain — exactly as it plays.</p>
+    </div>
+  </div>
+  <div class="folio">SPACE TRAVEL</div>
+</section>
+
+<!-- ============================== ENGINE ============================== -->
+<section class="page text-page">
+  <div class="kicker">00 · The engine</div>
+  <h2>Every frame is a function of time</h2>
+  <div class="accent"></div>
+  <div class="pipeline">
+    <div class="stage"><b>Clock</b>Seekable demo time; the music follows it, re-seeking on drift.</div><div class="arrow">→</div>
+    <div class="stage"><b>Timeline</b>Text file: scene, length in beats, transition, parameters. Hot-reloaded.</div><div class="arrow">→</div>
+    <div class="stage"><b>Scenes</b>Each renders linear HDR into its own target (raymarching, meshes, particles).</div><div class="arrow">→</div>
+    <div class="stage"><b>Transition</b>A shader per file blends outgoing and incoming scene: crossfade, flash, wipe, dissolve, glitch.</div><div class="arrow">→</div>
+    <div class="stage"><b>Post</b>Bloom mip chain, chromatic aberration, exposure, ACES, vignette, grain, sRGB.</div>
+  </div>
+  <div class="two" style="grid-template-columns: 1fr 1.15fr;">
+    <div>
+      <h3>Pure functions of time</h3>
+      <p>No scene accumulates state from frame to frame. Anything that moves — a ship on its path, a star in its
+      orbit, a camera rolling into hyperspace — is computed from the current time, integrating speed curves when
+      needed. That single rule makes the whole demo <b>scrubbable</b>: it can be paused, rewound, looped on one
+      scene or captured at any beat, which is how the images of this book were made.</p>
+      <h3>Music and sync</h3>
+      <p>The soundtrack is a tracker module played by libopenmpt. At load time the module is played through once,
+      silently, to record the exact time of every row and note-on. Scenes then ask for <em>seconds since the last
+      kick</em> or <em>since the last snare</em> — again a pure function of time — and turn it into flashes,
+      pulses and flares.</p>
+      <h3>Building blocks</h3>
+      <ul>
+        <li><b>Fullscreen passes</b> for anything raymarched or raytraced (most scenes).</li>
+        <li><b>Procedural geometry</b>: quads and points built in the vertex shader from <em>gl_VertexID</em>.</li>
+        <li><b>Mesh renderer</b>: procedural meshes, GPU instancing from one storage buffer, cascaded soft shadows.</li>
+        <li><b>Noise volume</b>: a 128³ tileable texture generated by a compute shader, the raw material of every cloud.</li>
+      </ul>
+    </div>
+    <pre class="code"><span class="c">// one frame of the demo</span>
+<span class="k">frame</span>(t):
+    playhead = timeline.<span class="f">at</span>(t <span class="k">mod</span> timeline.length)
+    sync     = syncTrack.<span class="f">evaluate</span>(songTime(t) − latency)
+               <span class="c">// beat phase, seconds since each note-on</span>
+
+    hdrA = <span class="f">render</span>(playhead.scene, playhead.localTime, sync)
+    <span class="k">if</span> playhead.transitioning:
+        hdrB = <span class="f">render</span>(playhead.previous, previousLocalTime, sync)
+        hdr  = transitionShader(hdrB, hdrA, playhead.blend)
+    <span class="k">else</span>:
+        hdr  = hdrA
+
+    <span class="c">// post chain</span>
+    bloom  = <span class="f">downsample13</span>(<span class="f">threshold</span>(hdr)) … 6 mips
+    bloom  = <span class="f">tentUpsample</span>(mips) accumulated back up
+    color  = <span class="f">chromaticAberration</span>(hdr) + bloom · intensity
+    color  = <span class="f">ACES</span>(color · exposure) · vignette
+    screen = <span class="f">sRGB</span>(color) + grain
+
+<span class="c">// a scene is a pure function of its context</span>
+<span class="k">interface</span> Scene:
+    init(resources)               <span class="c">// meshes, shaders, buffers</span>
+    render(context, hdrTarget)    <span class="c">// context = time, beat, params</span>
+    imgui()                       <span class="c">// live tweakables in dev builds</span></pre>
+  </div>
+  <div class="folio">THE ENGINE</div>
+</section>
+
+<section class="page tech">
+  <header><div class="num">00</div><h2>Tools of the trade</h2></header>
+  <div class="cols wide-code" style="grid-template-columns: 1.45fr 1fr;">
+    <div><img class="full-img" src="images/devtools.jpg" alt=""></div>
+    <div>
+      <h3>The dev overlay</h3>
+      <p>Development builds carry a Dear ImGui overlay on top of the demo. It shows frame timings measured with
+      GPU timer queries, a time slider that scrubs the whole demo, the timeline with the active entry and its
+      transition, every shader program with its compile status, and per-scene sliders for every tunable — the same
+      names can be written as parameters in the timeline file.</p>
+      <h3>Hot reload</h3>
+      <p>Shaders are read straight from the source tree with a small <em>#include</em> preprocessor. When a file
+      changes on disk the program is rebuilt; if the new version fails to compile the old one keeps running and the
+      error, mapped back to file and line, appears in the overlay. The timeline file reloads the same way, so
+      scene order, lengths and transitions can be edited while the music plays.</p>
+      <h3>Capture</h3>
+      <p><em>SpaceTravel --capture frame.png --time 170.88</em> renders the frame at that instant and exits — the
+      pure-time rule makes every capture exactly reproducible. A distribution build turns all of this off and
+      links statically into a single executable.</p>
+    </div>
+  </div>
+  <div class="folio">TOOLS</div>
+</section>
+
+<!-- ============================== 01 INTRO ============================== -->
+<section class="page hero">
+  <img src="images/intro-a.jpg" alt="">
+  <div class="shade"></div>
+  <div class="caption">
+    <div class="num">01</div><h2>Intro</h2>
+    <div class="tagline">Copper bars, a chrome logo that bounces in, a rainbow sine scroller and its reflection — a love letter to 1990.</div>
+  </div>
+  <div class="folio">INTRO</div>
+</section>
+<section class="page tech">
+  <header><div class="num">01</div><h2>Intro · one fragment shader</h2></header>
+  <div class="thumbs">
+    <figure><img src="images/intro-b.jpg" alt=""><figcaption>The bars sweep in front of and behind each other; the scroller ripples in the water.</figcaption></figure>
+    <div class="pull">One shader, seven copper bars and an 8×8 font drawn in source code.</div>
+  </div>
+  <div class="cols">
+    <div>
+      <p>The whole scene is a single fullscreen shader. Text comes from a built-in <b>8×8 bitmap font</b>, designed as
+      rows of <em>X</em> and <em>.</em> in the source code and uploaded as a tiny texture atlas; the strings live in a
+      second integer texture, one line per row, so the shader can look up any glyph pixel directly.</p>
+      <ul>
+        <li><b>Copper bars</b>: seven bars on sine paths; the nearest one covering the pixel wins, its depth darkening it, a squared profile giving the rounded tube and a thin specular line. They flash on the kick.</li>
+        <li><b>Chrome logo</b>: each font pixel becomes a bevelled tile; colour is a sky-to-horizon chrome gradient by glyph row, a diagonal shine sweeps across, rows wobble with the beat. It drops in with a bounce.</li>
+        <li><b>Sine scroller</b>: two summed sines bend the text per column; the water below mirrors it with a rippled lookup.</li>
+      </ul>
+    </div>
+    <pre class="code"><span class="k">for each</span> pixel:
+    color = <span class="f">gradient</span>() + <span class="f">twoLayersOfDriftingStars</span>()
+
+    <span class="c">// copper bars: keep the nearest bar covering this row</span>
+    <span class="k">for</span> i <span class="k">in</span> 0..6:
+        phase  = t·speed + i·0.45
+        center = 0.6 + 0.24·sin(phase);  depth = cos(phase)
+        d = |y − center| / thickness
+        <span class="k">if</span> d &lt; 1 <span class="k">and</span> depth &gt; nearest:
+            bar = palette(i) · (0.25 + 1.4·(1 − d²)) · depthShade
+                  + specular(1 − d²)¹⁶ ;  bar ·= 1 + kickPulse
+
+    <span class="c">// logo: font pixel → bevelled tile</span>
+    q   = (pixel − origin(bounce(t))) / blockSize
+    q.x += sin(row·0.7 + t·2.5) · wobble
+    <span class="k">if</span> <span class="f">fontTexel</span>(text, floor(q)):
+        color = chrome(row) · bevel(fract(q)) + shineBand(q, t)
+
+    <span class="c">// sine scroller and its reflection</span>
+    column = x/block + t·speed
+    yText  = y/block − (2.5·sin(column·0.04 + 2t) + 1.5·sin(…))
+    <span class="k">if</span> y &lt; waterline: lookup mirrored, x += ripple(y, t), tint blue</pre>
+  </div>
+  <div class="knobs">Tunables: <span>scroll speed</span><span>logo wobble</span><span>copper speed</span><span>kick instrument</span></div>
+  <div class="folio">INTRO</div>
+</section>
+
+<!-- ============================== 02 HSTARS ============================== -->
+<section class="page hero">
+  <img src="images/hstars-a.jpg" alt="">
+  <div class="shade"></div>
+  <div class="caption">
+    <div class="num">02</div><h2>Parallax stars</h2>
+    <div class="tagline">The classic horizontal starfield in six depth layers, and a banded gas giant drifting between them.</div>
+  </div>
+  <div class="folio">PARALLAX STARS</div>
+</section>
+<section class="page tech">
+  <header><div class="num">02</div><h2>Parallax stars · geometry from gl_VertexID</h2></header>
+  <div class="thumbs">
+    <figure><img src="images/hstars-b.jpg" alt=""><figcaption>Near the end the stars accelerate into streaks, handing over to the warp.</figcaption></figure>
+    <div class="pull">No vertex buffers: a star is six vertices and a hash.</div>
+  </div>
+  <div class="cols">
+    <div>
+      <p>No vertex buffer is involved: one draw call of <em>6 × stars</em> vertices, and the vertex shader builds each
+      star's quad from its index. Stars are grouped by layer so far and near layers can be drawn in two calls,
+      with the planet in between.</p>
+      <ul>
+        <li><b>Parallax</b>: speed and size grow with layer depth; positions wrap with <em>fract()</em>.</li>
+        <li><b>Motion streaks</b>: each quad is stretched along the motion by the distance covered in 1/60 s, and its brightness spread over the streak.</li>
+        <li><b>Acceleration</b> is a speed curve integrated on the CPU — never accumulated per frame — so the scene stays scrubbable.</li>
+        <li><b>Gas giant</b>: a sphere shaded per pixel, with bands from latitude plus 3D fbm turbulence, storms, limb darkening and a blue rim, composited with premultiplied alpha.</li>
+      </ul>
+    </div>
+    <pre class="code"><span class="c">// CPU, once per frame</span>
+travel = ∫₀ᵗ speed(τ) dτ        <span class="c">// speed rises over the last quarter</span>
+
+<span class="c">// vertex shader, star k (6 vertices per quad)</span>
+layer    = k / starsPerLayer;     depth = (layer + 1) / layers
+parallax = mix(0.06, 1.0, depth²)
+x        = fract(hash(k) − travel·parallax) · span − span/2
+radius   = mix(0.7, 2.6, depth) px
+streak   = speed · parallax · width / 60 / 2 px
+quad     = center ± (radius·2 + streak, radius·2)
+color    = tint(hash) · mix(0.25, 3, depth²) · twinkle / (1 + streak·0.3)
+
+<span class="c">// fragment: capsule-shaped gaussian</span>
+d = max(|local.x| − streak, 0)² + local.y²
+out = color · exp(−1.5 d)              <span class="c">// additive blending</span>
+
+<span class="c">// planet, fullscreen with premultiplied alpha</span>
+center = (rightEdge − travel · ½ width, −0.38)   <span class="c">// between far and near layers</span>
+n     = sphereNormal(pixel)
+bands = sin(latitude·14 + fbm(rotate(n, t)·3)·4)
+color = palette(bands) · (0.015 + 1.5·max(n·L, 0)) · limb + rimGlow</pre>
+  </div>
+  <div class="knobs">Tunables: <span>speed</span><span>boost</span><span>density</span><span>planet</span></div>
+  <div class="folio">PARALLAX STARS</div>
+</section>
+
+<!-- ============================== 03 PILLARS ============================== -->
+<section class="page hero">
+  <img src="images/pillars-b.jpg" alt="">
+  <div class="shade"></div>
+  <div class="caption">
+    <div class="num">03</div><h2>Nebula crossing</h2>
+    <div class="tagline">Towering pillars of dust, sculpted and backlit by a cluster of young stars — fully raymarched volume.</div>
+  </div>
+  <div class="folio">NEBULA CROSSING</div>
+</section>
+<section class="page tech">
+  <header><div class="num">03</div><h2>Nebula · volumetric light</h2></header>
+  <div class="thumbs">
+    <figure><img src="images/pillars-a.jpg" alt=""><figcaption>Approach: the pillars rise from a floor of dust.</figcaption></figure>
+    <figure><img src="images/pillars-c.jpg" alt=""><figcaption>Closer, the eroded silhouettes catch a silver lining.</figcaption></figure>
+  </div>
+  <div class="cols">
+    <div>
+      <p>A participating medium marched at half resolution. The pillars are a <b>signed distance</b> — bent,
+      tapering columns with rounded heads — <b>eroded by the noise volume</b>, so their edges break into wisps. Glowing
+      gas fills the space behind them.</p>
+      <ul>
+        <li><b>Self-shadowing</b>: at every sample a short march toward the cluster accumulates dust; that is what carves the light shafts and darkens the pillars' cores.</li>
+        <li><b>Henyey–Greenstein</b> forward scattering lights the edges when looking toward the light.</li>
+        <li><b>Energy-conserving integration</b>: each step adds <em>S·(1−e<sup>−σΔt</sup>)/σ</em>, so results don't depend on the step size.</li>
+        <li><b>Hubble palette</b>: gas glows teal near the cluster and gold further out.</li>
+        <li>Sky and cluster glow are added at full resolution, dimmed by the volume's transmittance.</li>
+      </ul>
+    </div>
+    <pre class="code"><span class="k">for each</span> pixel (½ resolution):
+    T = 1;  L = 0;  t = jitter(pixel)·Δt
+    <span class="k">repeat</span> N steps:
+        p    = ro + rd·t
+        dust = clamp(−0.12 · (<span class="f">pillarSDF</span>(p)
+                         + 30·(noise(p·0.011) − ½)
+                         − 14·(worley(p·0.029) − ½)), 0, 1)
+        gas  = <span class="f">cloud</span>(noise(p·0.003)) <span class="c">// behind the pillars only</span>
+        σ    = dust·σ_dust + gas·σ_gas
+
+        <span class="c">// how much of the cluster light reaches p</span>
+        lit  = exp(−Σ<sub>k=1..6</sub> dust(p + ℓ·k·s) · s · σ_dust)
+        S    = light · lit · falloff(|cluster − p|) · HG(rd·ℓ, g)
+               · (dust·albedo + gas·albedo_gas)
+             + gasColor(p) · gas · emission
+             + rim · dust(1 − dust) · lit      <span class="c">// ionisation fronts</span>
+
+        L += T · S · (1 − e^(−σΔt)) / σ
+        T ·= e^(−σΔt);   <span class="k">stop if</span> T &lt; 0.02
+    <span class="k">output</span> (L, 1 − T)
+
+composite: (stars + clusterGlow) · T + L</pre>
+  </div>
+  <div class="knobs">Tunables: <span>steps</span><span>light steps</span><span>dust</span><span>gas</span><span>scatter</span><span>rim</span><span>volume scale</span></div>
+  <div class="folio">NEBULA CROSSING</div>
+</section>
+
+<!-- ============================== 04 WARP ============================== -->
+<section class="page hero">
+  <img src="images/warp-b.jpg" alt="">
+  <div class="shade"></div>
+  <div class="caption">
+    <div class="num">04</div><h2>Warp</h2>
+    <div class="tagline">Sixty thousand stars stretch into streaks as the camera rolls into a hyperspace tunnel.</div>
+  </div>
+  <div class="folio">WARP</div>
+</section>
+<section class="page tech">
+  <header><div class="num">04</div><h2>Warp · motion blur as an effect</h2></header>
+  <div class="thumbs">
+    <figure><img src="images/warp-a.jpg" alt=""><figcaption>Cruise speed, just before the acceleration.</figcaption></figure>
+    <div class="pull">Streaks are motion blur — from where the star was to where it is.</div>
+  </div>
+  <div class="cols">
+    <div>
+      <p>The stars fill a hollow cylinder around the view axis and wrap in depth. Nothing is simulated: a star's
+      position is a pure function of the <b>distance travelled</b>, itself the integral of a speed curve that ramps
+      from cruise to forty times faster.</p>
+      <ul>
+        <li><b>Streaks are motion blur</b>: each quad spans from where the star was <em>shutter</em> seconds ago to where it is now, so faster means longer, perspective included.</li>
+        <li>Brightness falls with distance and is divided by streak length — long streaks keep their energy.</li>
+        <li>The <b>tunnel</b> behind is noise in polar coordinates: depth = 1/r, high angular frequency against low depth frequency makes radial streaks. It fades in with the hyperspace factor; the stars shift blue.</li>
+        <li>The roll angle is also integrated, so the spin accelerates smoothly.</li>
+      </ul>
+    </div>
+    <pre class="code"><span class="c">// CPU</span>
+speed(t)  = cruise + (top − cruise) · smoothstep(0.3, 0.97, t/T)³
+travel    = ∫ speed,   roll = ∫ rollRate,   hyper = smoothstep(0.55, 1, t/T)
+
+<span class="c">// vertex shader, star k</span>
+angle, r², z0 = hash(k)
+xy   = rotate(roll) · (cos angle, sin angle) · r
+z    = mod(z0·D − travel, D) + near
+head = xy / z · focal
+tail = xy / (z + speed·shutter) · focal
+quad = from tail − axis·w  to  head + axis·w,  width w = max(0.01/z, 1px)
+color = tint(hash) → blue(hyper) · (1.2/z) · fadeIn(z) / (1 + 0.12·len/w)
+
+<span class="c">// tunnel, fullscreen behind the stars</span>
+r     = |p|,  dir = p / r
+depth = 0.25/r + travel·0.04
+n     = fbm(vec3(dir·5, depth·0.6))
+color = mix(blue, violet, n) · smoothstep(.45, .85, n) · hyper
+      + vanishingGlow(r) · hyper</pre>
+  </div>
+  <div class="knobs">Tunables: <span>stars</span><span>cruise speed</span><span>hyper</span><span>shutter</span><span>depth</span><span>focal</span></div>
+  <div class="folio">WARP</div>
+</section>
+
+<!-- ============================== 05 CORONA ============================== -->
+<section class="page hero">
+  <img src="images/corona-a.jpg" alt="">
+  <div class="shade"></div>
+  <div class="caption">
+    <div class="num">05</div><h2>Giant star</h2>
+    <div class="tagline">Out of hyperspace beside a boiling star: granulation, sunspots, flames streaming from the corona.</div>
+  </div>
+  <div class="folio">GIANT STAR</div>
+</section>
+<section class="page tech">
+  <header><div class="num">05</div><h2>Giant star · surface, corona, prominences</h2></header>
+  <div class="cols wide-code" style="margin-top: 2mm;">
+    <div>
+      <p>The star is traced at half resolution and composited over a full-resolution celestial sphere of stars (one
+      of the shared building blocks: stars live in 3D cells around the camera and are never clipped at cell borders).</p>
+      <ul>
+        <li><b>Surface</b>: three fbm fields warp the lookup of a finer one — <em>domain warping</em> — for boiling granulation; fine cells on top, large dark spots, and limb darkening that makes the disc read as a sphere.</li>
+        <li><b>Corona</b>: evaluated at the ray's closest approach to the star. Shifting the noise domain by <em>(height − time)</em> stretches it into streamers that flow outward forever.</li>
+        <li><b>Prominences</b>: five plasma arcs, each a torus segment standing on the surface in its own frame, raymarched as glowing tubes and turning with the star.</li>
+        <li>The camera orbits with a slow approach; corona flares on the snare.</li>
+      </ul>
+    </div>
+    <pre class="code"><span class="c">// surface at normal n (star frame)</span>
+warp  = (fbm(p·3 + t·k₁), fbm(p·3 + o₂ − t·k₂), fbm(p·3 + o₃ + t·k₃))
+gran  = fbm(p·9 + warp·2.2 + t·0.04)
+heat  = (0.75·gran + 0.25·valueNoise(p·30 + warp·4)) · (1 − 0.85·spots(p))
+color = ramp(red → orange → white, heat) · (0.3 + 0.7·μ^0.55)
+
+<span class="c">// corona: one sample per ray, at its closest approach</span>
+c      = ro + rd·max(−ro·rd, 0);   h = |c| − 1
+flames = fbm(dir(c)·5 + (h − 0.12t)·0.9)·0.7 + fbm(dir·11 + …)·0.3
+glow   = exp(−3h / (reach·(0.35 + 1.3·flames)))
+color += mix(gold, red, h) · (glow·(0.6 + 1.4·flames) + rim(h)) · (1 + snare)
+
+<span class="c">// prominences: 48 steps through a bounding sphere</span>
+<span class="k">for each</span> step p (rotated into the star frame):
+    d = min over 5 arcs of |( |local.xy| − height, local.z )| − thickness(angle)
+    density += (exp(−70d) + 0.08·exp(−12d)) · Δt
+color += hotPink · density</pre>
+  </div>
+  <div class="knobs">Tunables: <span>render scale</span><span>surface</span><span>corona</span><span>reach</span><span>prominences</span><span>snare flare</span><span>orbit speed</span></div>
+  <div class="folio">GIANT STAR</div>
+</section>
+
+<!-- ============================== 06 ASTEROIDS ============================== -->
+<section class="page hero">
+  <img src="images/asteroids-a.jpg" alt="">
+  <div class="shade"></div>
+  <div class="caption">
+    <div class="num">06</div><h2>Asteroid chase</h2>
+    <div class="tagline">A small fighter skims rock after rock, their shadows sweeping across its hull, the star blazing behind.</div>
+  </div>
+  <div class="folio">ASTEROID CHASE</div>
+</section>
+<section class="page tech">
+  <header><div class="num">06</div><h2>Asteroids · instancing and shadows</h2></header>
+  <div class="thumbs">
+    <figure><img src="images/asteroids-b.jpg" alt=""><figcaption>Backlit rocks: hard key light, almost no ambient, a thin rim.</figcaption></figure>
+    <div class="pull">The path is built from the field: every waypoint hides in a rock's shadow.</div>
+  </div>
+  <div class="cols">
+    <div>
+      <p>The first scene of the mesh renderer. Eight rock variants are built at start-up — icospheres displaced by
+      noise, with craters carved as bowls and raised rims — in two levels of detail. Thousands of instances share one
+      storage buffer and are drawn with a handful of calls.</p>
+      <ul>
+        <li><b>A path made for shadows</b>: big "hero" rocks are placed first; each waypoint sits behind its rock along the light direction, so the rock is between ship and star when the ship skims past.</li>
+        <li><b>Chase camera</b>: the same path, a fraction of a second behind — it always seems to be catching up.</li>
+        <li><b>Cascaded shadow maps</b>: a tight cascade around the ship, a wide one over the field, snapped to texels, sampled with a rotated 12-tap Poisson disc.</li>
+        <li><b>Light shafts</b> are a radial blur of the sky mask toward the star; the <b>lens flare</b> fades with the star's visibility.</li>
+      </ul>
+    </div>
+    <pre class="code"><span class="c">// field (rebuilt only when parameters change)</span>
+<span class="k">every</span> ~70 units along z:  heroRock = random(size 6..13)
+    waypoint = rock − lightDir · (rock.size + pass) / |lightDir.xy|
+path = HermiteSpline(waypoints);  push heroes clear of path and camera
+background rocks: outside corridor(path), uniform over annulus area
+
+<span class="c">// each frame (CPU)</span>
+ship   = pose(path, speed·t);    bank ∝ lateral acceleration
+camera = pose(path, speed·(t − lag)) + up·h − forward·b
+<span class="k">for each</span> rock: cull vs frustum and both cascades; LOD by distance
+upload all instances to one SSBO;  draw per (variant, LOD) with baseInstance
+
+<span class="c">// rock.frag</span>
+height = Σ valueNoise(objectPos·fᵢ)·aᵢ        <span class="c">// sticks to the rotating rock</span>
+N      = perturb(normal, dFdx/dFdy(worldPos), dFdx/dFdy(height))
+color  = albedo · (sun · max(N·L, 0) · PCF₁₂(shadowMap))
+       + albedo · ambient · cold + rim · max(−V·L, 0)
+
+<span class="c">// shafts (½ res): march 48 steps toward the star's screen position</span>
+sum += isSky(depth(p)) · glow(|p − starUV|) · decayᵏ</pre>
+  </div>
+  <div class="knobs">Tunables: <span>speed</span><span>density</span><span>spread</span><span>skim spacing</span><span>skim distance</span><span>lag</span><span>ambient</span><span>softness</span><span>shafts</span><span>flare</span></div>
+  <div class="folio">ASTEROID CHASE</div>
+</section>
+
+<!-- ============================== 07 RINGS ============================== -->
+<section class="page hero">
+  <img src="images/rings-a.jpg" alt="">
+  <div class="shade"></div>
+  <div class="caption">
+    <div class="num">07</div><h2>Ringed giant</h2>
+    <div class="tagline">Diving through the ring plane: from a painted sheet in the distance to tumbling chunks of ice all around.</div>
+  </div>
+  <div class="folio">RINGED GIANT</div>
+</section>
+<section class="page tech">
+  <header><div class="num">07</div><h2>Rings · raytracing meets rasterization</h2></header>
+  <div class="thumbs">
+    <figure><img src="images/rings-b.jpg" alt=""><figcaption>In the ring plane, ice chunks are real instanced meshes.</figcaption></figure>
+    <figure><img src="images/rings-c.jpg" alt=""><figcaption>Below the rings, looking up at the planet's terminator.</figcaption></figure>
+  </div>
+  <div class="cols">
+    <div>
+      <p>The planet and the ring disc are raytraced analytically in one pass, which also <b>writes depth</b>. Ice chunks
+      near the camera are rasterized afterwards and depth-tested against it, so both worlds intersect correctly.</p>
+      <ul>
+        <li><b>Ring profile</b>: radial opacity built from a base curve, fine ringlets and two gaps.</li>
+        <li><b>Shadows both ways</b>: rings in the planet's shadow cylinder go dark; points on the planet test where their ray to the sun crosses the ring plane.</li>
+        <li><b>Back side</b>: seen from below, rings glow by transmission — thin parts brightest, toward the sun.</li>
+        <li><b>Hand-off</b>: the sheet fades out within 70 units; there, chunks are generated on a grid of cells around the camera, with the same radial density.</li>
+      </ul>
+    </div>
+    <pre class="code"><span class="k">for each</span> pixel:
+    tPlanet = raySphere(ro, rd, R);   tRing = −ro.y / rd.y
+    <span class="k">if</span> tPlanet hit:
+        p = hit;  color = bands(p) · sun · max(n·L, 0) · <span class="f">ringShadow</span>(p)
+        <span class="c">// ringShadow: s = −p.y/L.y; 1 − opacity(|(p + L·s).xz|)·0.9</span>
+    <span class="k">if</span> tRing &gt; 0 <span class="k">and</span> tRing &lt; tPlanet:
+        r = |hit.xz|;  α = opacity(r) · smoothstep(nearFade·0.35, nearFade, tRing)
+        face = sameSideAsSun ? albedo·sun·(0.25 + 0.75|L.y|)
+                             : albedo·sun·(1 − α)·forwardScatter(rd·L)
+        color = mix(color, face · <span class="f">planetShadow</span>(hit), α)
+    gl_FragDepth = depth(nearest opaque hit)
+
+<span class="c">// CPU, each frame near the ring plane</span>
+<span class="k">for each</span> cell (2.5 units) within 70 of the camera:
+    p = cellCenter + jitter(hash);  y = (hash − ½)·2.4
+    <span class="k">if</span> hash &lt; opacity(|p.xz|)·1.1 <span class="k">and</span> clear of camera path:
+        addInstance(p, size(hash), spin(hash, t))</pre>
+  </div>
+  <div class="knobs">Tunables: <span>sun azimuth</span><span>sun elevation</span><span>sun intensity</span><span>chunk density</span><span>focal</span></div>
+  <div class="folio">RINGED GIANT</div>
+</section>
+
+<!-- ============================== 08 CANYON ============================== -->
+<section class="page hero">
+  <img src="images/canyon-b.jpg" alt="">
+  <div class="shade"></div>
+  <div class="caption">
+    <div class="num">08</div><h2>Canyon run</h2>
+    <div class="tagline">Dusk on one of the giant's moons: a low, fast flight between stepped red cliffs, dust hanging in the light.</div>
+  </div>
+  <div class="folio">CANYON RUN</div>
+</section>
+<section class="page tech">
+  <header><div class="num">08</div><h2>Canyon · heightfield raymarching</h2></header>
+  <div class="thumbs">
+    <figure><img src="images/canyon-a.jpg" alt=""><figcaption>Light shafts through the dust where the sun clears the rim.</figcaption></figure>
+    <div class="pull">A heightfield traced per pixel, a mesh drawn on top, one shared depth.</div>
+  </div>
+  <div class="cols">
+    <div>
+      <p>The terrain is a function <em>h(x, z)</em> marched per pixel at reduced resolution, writing depth. The result is
+      upscaled together with its depth, and the fighter mesh is then drawn at full resolution and depth-tested
+      against it — crisp ship, affordable terrain.</p>
+      <ul>
+        <li><b>Shape</b>: mesas from noise, carved by a winding canyon whose walls are mapped through a <em>terrace</em> function for flat ledges and steep rises.</li>
+        <li><b>Material</b>: strata colours by height, sand on flat ground, dark streaks on cliffs.</li>
+        <li><b>Shadows</b>: soft heightfield shadows from the low sun, plus the fighter's own shadow, an analytic ellipsoid test.</li>
+        <li><b>Volumetric dust</b> low in the canyon; each sample probes twice toward the sun to know if it is lit.</li>
+        <li>The fighter is shaded with the same terrain shadow function, so it flies in and out of the cliffs' shade.</li>
+      </ul>
+    </div>
+    <pre class="code"><span class="f">h</span>(x, z):
+    mesa = 70 + noise(x,z)·40 + noise(…)·12
+    d    = |x − center(z)| + erosion(x,z)
+    s    = clamp((d − 0.35·w(z)) / (0.9·w(z)), 0, 1)
+    <span class="k">return</span> mix(floorNoise, mesa, <span class="f">terrace</span>(s))   <span class="c">// (⌊5s⌋ + smoothstep(.55,1,fract 5s))/5</span>
+
+<span class="c">// march: conservative steps for steep cliffs, then bisection</span>
+<span class="k">repeat</span>: Δ = p.y − h(p.xz);  <span class="k">if</span> Δ &lt; 0.002t <span class="k">break</span>;  t += max(0.3Δ, ε(t))
+5 × bisect(previous t, t)
+
+n     = normalFromCentralDifferences(h)
+sun   = max(n·L, 0) · <span class="f">softShadow</span>(p, L) · <span class="f">shipShadow</span>(p)
+<span class="c">// softShadow: march toward L, visibility = min(10·Δ/t)</span>
+color = strata(p.y, n) · (sun·sunColor + sky·(0.5 + 0.5 n.y)·depthAO + bounce)
+color = mix(color, haze, 1 − e^(−0.0015 t))
+
+<span class="c">// dust: 16 jittered steps, density = e^(−y/12) · noise3D(p + wind)</span>
+lit = Π clamp((q.y − h(q.xz))·0.2) for q = p + L·{12, 40}
+L  += T · (sun·lit·HG + sky) · density · Δt</pre>
+  </div>
+  <div class="knobs">Tunables: <span>speed</span><span>lag</span><span>bank</span><span>sun</span><span>dust</span><span>haze</span><span>steps</span><span>terrain scale</span></div>
+  <div class="folio">CANYON RUN</div>
+</section>
+
+<!-- ============================== 09 FLEET ============================== -->
+<section class="page hero">
+  <img src="images/fleet-b.jpg" alt="">
+  <div class="shade"></div>
+  <div class="caption">
+    <div class="num">09</div><h2>Fleet jump-in</h2>
+    <div class="tagline">One on every other beat, twelve capital ships drop out of hyperspace into formation above the planet.</div>
+  </div>
+  <div class="folio">FLEET JUMP-IN</div>
+</section>
+<section class="page tech">
+  <header><div class="num">09</div><h2>Fleet · timing on the beat</h2></header>
+  <div class="thumbs">
+    <figure><img src="images/fleet-a.jpg" alt=""><figcaption>The first arrivals, with the planet's limb and clouds below.</figcaption></figure>
+    <div class="pull">Twelve arrivals, one every other beat.</div>
+  </div>
+  <div class="cols">
+    <div>
+      <p>An almost pure reuse scene: the dreadnought's procedural mesh, hull shader and planet sky, twelve instances
+      and two shadow cascades. What makes it is <b>timing</b>: each arrival is scheduled on a beat of the music.</p>
+      <ul>
+        <li>A ship approaches from thousands of units behind its slot, braking exponentially — fast enough to read as a jump.</li>
+        <li>During the first fraction of a second the mesh is <b>stretched along its length</b>, the classic hyperspace exit.</li>
+        <li><b>Streaks and flashes</b> are drawn in one fullscreen pass: ship positions are projected on the CPU and passed as uniform arrays; the shader sums a glowing segment and a flare per ship.</li>
+      </ul>
+    </div>
+    <pre class="code">beat = 60 / bpm
+<span class="k">for</span> ship i <span class="k">in</span> 0..11:
+    s = t − (firstBeat + i·everyBeats)·beat
+    <span class="k">if</span> s &lt; 0: <span class="k">continue</span>                      <span class="c">// not yet arrived</span>
+    position  = slot[i] + drift(t) − (0, 0, 2000·e^(−7s))
+    stretchZ  = 1 + 25·e^(−10s)
+    instances += translate(position) · scale(1, 1, stretchZ)
+    streak[i] = (project(tail), project(head)),  intensity e^(−6s)
+    flash[i]  = project(head),                   intensity e^(−4s)
+
+shadowPasses(instances);  sky(planet);  hulls(instances)
+
+<span class="c">// flashes.frag, added on top</span>
+<span class="k">for</span> i: color += blue · streak[i].intensity · glow(distToSegment(pixel))
+        color += white · flash[i].intensity · (radialGlow + horizontalFlare)</pre>
+  </div>
+  <div class="knobs">Tunables: <span>first arrival beat</span><span>beats between arrivals</span><span>sun azimuth / elevation</span><span>focal</span></div>
+  <div class="folio">FLEET JUMP-IN</div>
+</section>
+
+<!-- ============================== 10 DREADNOUGHT ============================== -->
+<section class="page hero">
+  <img src="images/dreadnought-c.jpg" alt="">
+  <div class="shade"></div>
+  <div class="caption">
+    <div class="num">10</div><h2>Dreadnought</h2>
+    <div class="tagline">Drifting over a city on a hull, toward the command tower — we are very small, and the ship is very large.</div>
+  </div>
+  <div class="folio">DREADNOUGHT</div>
+</section>
+<section class="page tech">
+  <header><div class="num">10</div><h2>Dreadnought · a procedural city</h2></header>
+  <div class="thumbs">
+    <figure><img src="images/dreadnought-a.jpg" alt=""><figcaption>Overhead pass: the nose slides in over the planet's horizon.</figcaption></figure>
+    <figure><img src="images/dreadnought-b.jpg" alt=""><figcaption>Planet eclipse: the hull crosses the bright limb.</figcaption></figure>
+    <figure><img src="images/dreadnought-d.jpg" alt=""><figcaption>Departure: seven engines recede.</figcaption></figure>
+  </div>
+  <div class="cols">
+    <div>
+      <p>An original wedge-shaped capital ship, built entirely by code. Large forms come from <b>lofts</b> — polygon
+      cross-sections joined along z. Detail comes from layers of rules that read the shape's own height functions.</p>
+      <ul>
+        <li><b>The city</b>: a grid over the decks; noise defines districts and plazas; a block is placed only where its four footprint corners share one level, so terraces stay clean; some are stacked, a few become towers.</li>
+        <li><b>Baked contact occlusion</b>: block vertices touching the hull are darkened — a cheap stand-in for ambient occlusion.</li>
+        <li><b>Hull shader</b>: plates whose size and orientation vary by region, seams and small raised blocks as bump, weathering streaks, a low grazing sun with soft shadows, blue planet bounce, reflections.</li>
+        <li><b>Cinematography</b>: the ship moves, the camera mostly hangs still; cuts land on bar lines.</li>
+      </ul>
+    </div>
+    <pre class="code"><span class="c">// big forms</span>
+hull  = loft(hexagon, rings z = −100 … 100, width/height profile)
+tiers = 3 × loft(rect, following ridge(z) + lift·k)
++ tower, domes, reactor bulb, engine block with 7 nozzles
+
+<span class="c">// city on the decks</span>
+<span class="k">for each</span> cell (1.4 units) on the top surface:
+    district = fbm(x·0.045, z·0.045)
+    <span class="k">if</span> rand &gt; 0.12 + 0.75·smoothstep(.4, .62, district): <span class="k">continue</span>
+    footprint = cell · rand(0.45..0.95)   <span class="c">// long rows in dense districts</span>
+    <span class="k">if</span> max(cornerHeights) − min(cornerHeights) &gt; 0.5: <span class="k">continue</span>
+    height = 0.25 + 1.6·rand^2.2 · (0.6 + district)  <span class="c">// 3%: tower</span>
+    addBox(base = min(corners), occlusion(bottom) = 0.4)
+    maybe stack a smaller box
++ rims, turrets, lit windows in noise runs, underside plates, docking bay
+
+<span class="c">// hull.frag</span>
+plate = regionVariedRectangles(planarUV(p, n))   <span class="c">// id, distance to seam</span>
+N     = perturb(n, seams·0.04 + raisedBlocks(uv))
+color = albedo(plate, grime) · (sun·N·L·PCF + planetBounce + ambient)·AO
+      + env(reflect) · fresnel + engineGlow / distance²</pre>
+  </div>
+  <div class="knobs">Tunables: <span>hold shot</span><span>ship speed</span><span>sun angle</span><span>shadow softness</span><span>planet bounce</span><span>reflection</span><span>window lights</span></div>
+  <div class="folio">DREADNOUGHT</div>
+</section>
+
+<!-- ============================== 11 SUPERNOVA ============================== -->
+<section class="page hero">
+  <img src="images/supernova-c.jpg" alt="">
+  <div class="shade"></div>
+  <div class="caption">
+    <div class="num">11</div><h2>Supernova</h2>
+    <div class="tagline">The star dies on the beat: a shock shell of hot gas and cooling filaments races outward, a pulsar sweeping at its heart.</div>
+  </div>
+  <div class="folio">SUPERNOVA</div>
+</section>
+<section class="page tech">
+  <header><div class="num">11</div><h2>Supernova · an expanding volume</h2></header>
+  <div class="thumbs">
+    <figure><img src="images/supernova-a.jpg" alt=""><figcaption>Before: a pulsating, unstable giant.</figcaption></figure>
+    <figure><img src="images/supernova-b.jpg" alt=""><figcaption>Seconds after the flash: debris streaks outward.</figcaption></figure>
+  </div>
+  <div class="cols">
+    <div>
+      <p>A three-act scene timed to the music: the giant grows unstable, collapses in the last second, and the
+      flash lands exactly on beat 16. The shell is then raymarched at half resolution.</p>
+      <ul>
+        <li><b>Self-similar expansion</b>: the noise is sampled at <em>p / R</em>, so the structure grows with the shell instead of sliding through it.</li>
+        <li><b>Wrinkled front</b>: the shock radius varies with direction — Rayleigh–Taylor-like fingers.</li>
+        <li><b>Temperature</b>: blue-white at the front, cooling to hydrogen pink and oxygen teal filaments (cell noise) inside.</li>
+        <li>An <b>equatorial ring</b> flares, a <b>pulsar</b>'s beams sweep the gas, 4000 debris streaks ride outward; the camera shakes and pulls back.</li>
+      </ul>
+    </div>
+    <pre class="code">flash at t₀ = duration/3;   s = t − t₀
+starRadius = 22 · pulse(t) · (1 − smoothstep(t₀ − 1.2, t₀, t))
+R(s)       = 150·(1 − e^(−0.25s)) + 1.5s
+flashLight = 12·e^(−2.5s);   shake = 2.5·e^(−2s)
+
+<span class="c">// shell march inside the sphere 1.35R</span>
+<span class="k">for each</span> step p:
+    front    = R · (1 + 0.2·(noise(dir(p)·0.9) − ½))
+    x        = (|p| − front) / (0.22R + 1)      <span class="c">// 0 at the front</span>
+    profile  = smoothstep(0.15, 0, x) · smoothstep(−1.4, −0.2, x)
+    q        = p / R                               <span class="c">// expands with R</span>
+    density  = profile · (0.06 + 1.6·smoothstep(.55, .85, worley(q·1.6)))
+    heat     = smoothstep(−0.5, 0.1, x)
+    emission = mix(mix(pink, teal, noise(q)), blueWhite·3, heat) · density
+             + ringGlow(p) + pulsarBeam(p, angle(t))
+    L += T · emission · Δt;   T ·= e^(−density·Δt·k)
+
+<span class="c">// debris shard k: rides at R(s)·speed_k, streak from R(s − 0.12) to R(s)</span></pre>
+  </div>
+  <div class="knobs">Tunables: <span>volume scale</span><span>steps</span><span>shell brightness</span><span>debris</span><span>focal</span></div>
+  <div class="folio">SUPERNOVA</div>
+</section>
+
+<!-- ============================== 12 WORMHOLE ============================== -->
+<section class="page hero">
+  <img src="images/wormhole-a.jpg" alt="">
+  <div class="shade"></div>
+  <div class="caption">
+    <div class="num">12</div><h2>Wormhole</h2>
+    <div class="tagline">A door to another universe: through the mouth, a spiral galaxy; around it, our sky bent into rings and a vortex of light.</div>
+  </div>
+  <div class="folio">WORMHOLE</div>
+</section>
+<section class="page tech">
+  <header><div class="num">12</div><h2>Wormhole · two skies, one lens</h2></header>
+  <div class="thumbs">
+    <figure><img src="images/wormhole-b.jpg" alt=""><figcaption>The plunge: streaking tunnel walls and the light of the far side.</figcaption></figure>
+    <div class="pull">One number — the impact parameter — decides which universe a ray sees.</div>
+  </div>
+  <div class="cols">
+    <div>
+      <p>A fully analytic lens, cheap enough for full resolution. Each ray is classified by its <b>impact parameter</b>
+      <em>b</em>, its closest distance to the mouth's center.</p>
+      <ul>
+        <li><b>Through the mouth</b> (<em>b &lt; R</em>): the ray exits into the other universe, rotated more and more toward the rim, so the disc shows the whole far sky with multiple images at its edge.</li>
+        <li><b>Outside</b>: the ray is bent around the mouth, lensing our own sky — including the pink remnant of the supernova we just left.</li>
+        <li><b>The other sky</b> holds a face-on spiral galaxy: logarithmic-spiral arms in a gnomonic projection — the next destination.</li>
+        <li><b>Gas vortex</b>: a shell of noise rotating faster near the rim. The tunnel uses the noise volume's periodicity to wrap seamlessly around its circumference.</li>
+      </ul>
+    </div>
+    <pre class="code">tc = −ro·rd;   c = ro + rd·tc;   b = |c|;   out = c / b
+<span class="k">if</span> tc &gt; 0 <span class="k">and</span> b &lt; R:
+    θ     = π · (b/R)²                  <span class="c">// straight through at the center</span>
+    color = <span class="f">otherSky</span>(rd·cos θ − out·sin θ) · (1 + 1.5·(b/R)¹²)
+<span class="k">else</span>:
+    bend  = 1.2 · R / max(b, R)
+    color = <span class="f">ourSky</span>(rd·cos bend − out·sin bend)
+color += photonRing · exp(−|b − R| / 0.015R)
+
+<span class="f">otherSky</span>(d):  q = gnomonic(d, galaxyAxis)·3;  r = |q|;  φ = atan(q)
+    arms  = (½ + ½cos(2(φ − 2.6·ln r)))³
+    color = stars + exp(−2.2r)·(0.35 + 0.65·arms)·grain + core(r) + pinkKnots
+
+<span class="c">// gas: 40 steps in the shell [R, 3R]</span>
+q = rotate(p.xy, 0.4t + 3R/|p|);  density = shell(|p|)·cloud(noise3D(q))
+
+<span class="c">// tunnel: depth = 0.35/r + travel;  noise(vec3(angle/2π + …, depth, k))</span></pre>
+  </div>
+  <div class="knobs">Tunables: <span>lensing</span><span>gas</span><span>focal</span><span>render scale</span></div>
+  <div class="folio">WORMHOLE</div>
+</section>
+
+<!-- ============================== 13 GALAXY ============================== -->
+<section class="page hero">
+  <img src="images/galaxy-a.jpg" alt="">
+  <div class="shade"></div>
+  <div class="caption">
+    <div class="num">13</div><h2>Galaxy</h2>
+    <div class="tagline">Eight hundred thousand suns on their orbits, glowing gas and dark dust — then a dive into the disc.</div>
+  </div>
+  <div class="folio">GALAXY</div>
+</section>
+<section class="page tech">
+  <header><div class="num">13</div><h2>Galaxy · density waves</h2></header>
+  <div class="thumbs">
+    <figure><img src="images/galaxy-b.jpg" alt=""><figcaption>Inside the disc, looking across toward the core.</figcaption></figure>
+    <div class="pull">No gravity is simulated: the arms are ellipses that twist.</div>
+  </div>
+  <div class="cols">
+    <div>
+      <p>Spiral arms without simulating gravity. Every star moves on an <b>ellipse whose orientation twists with its
+      size</b>; where neighbouring ellipses crowd together, two arms appear — a <em>density wave</em>. Stars stream
+      through the arms while the pattern itself turns slowly.</p>
+      <ul>
+        <li>Each star is one vertex (<em>GL_POINTS</em>) whose attributes all come from integer PCG hashes of its id — exact for millions of ids.</li>
+        <li>Point size shrinks with distance and brightness is divided by size, so a star's light stays constant.</li>
+        <li><b>Gas</b> puffs are added; <b>dust</b> puffs trail the arms and are multiplied into the image (<em>dst ·= 1 − src</em>), carving dark lanes.</li>
+        <li>A background pass adds disc haze where the ray crosses the galactic plane, and a flattened core glow.</li>
+      </ul>
+    </div>
+    <pre class="code"><span class="c">// vertex shader, star id</span>
+bulge = hashU(id, 1) &lt; 0.18
+a     = bulge ? 14·u^1.6 : −28·ln(1 − u·(1 − e^(−110/28)))   <span class="c">// exp. disc</span>
+k(a)  = axis ratio: 0.6 in the core → 0.82 → 0.95 at the rim
+φ     = phase(id) + v/(a + 3) · t                <span class="c">// flat rotation curve</span>
+e     = (a·cos φ,  a·k(a)·sin φ)
+θ     = a·twist + pattern(t)                     <span class="c">// the twist makes the arms</span>
+pos   = (rotate(θ)·e).x, gaussian·thickness(a), (rotate(θ)·e).y
+size  = clamp(scale / |pos − cam|, 1, 6)
+color = temperature(id, bulge) · luminosity(id) · brightness / size
+
+<span class="c">// gas: quads on the same orbits, added (pink / blue)</span>
+<span class="c">// dust: thinner layer, phase − 0.12 (trailing), blend ZERO, ONE_MINUS_SRC_COLOR</span>
+
+<span class="c">// background: haze at the ray / plane crossing + core glow</span>
+r_plane = |(ro + rd·(−ro.y/rd.y)).xz|;   haze = e^(−r/30)
+core    = closestApproach in squashed frame (y·2.5) → e^(−r/5) + e^(−r/16)</pre>
+  </div>
+  <div class="knobs">Tunables: <span>stars</span><span>brightness</span><span>orbit speed</span><span>twist</span><span>gas</span><span>dust</span><span>core glow</span><span>disc haze</span></div>
+  <div class="folio">GALAXY</div>
+</section>
+
+<!-- ============================== 14 BLACK HOLE ============================== -->
+<section class="page hero">
+  <img src="images/blackhole-a.jpg" alt="">
+  <div class="shade"></div>
+  <div class="caption">
+    <div class="num">14</div><h2>Black hole</h2>
+    <div class="tagline">At the galaxy's heart, light itself bends: the far side of the disk arches over the shadow, ringed by fire.</div>
+  </div>
+  <div class="folio">BLACK HOLE</div>
+</section>
+<section class="page tech">
+  <header><div class="num">14</div><h2>Black hole · bending light</h2></header>
+  <div class="cols wide-code" style="margin-top: 2mm;">
+    <div>
+      <p>Every camera ray is integrated as a light path around a Schwarzschild black hole using the classic
+      approximation <em>a = −1.5 h² x / r⁵</em>, where <em>h</em> is the ray's angular momentum. No special cases are
+      written for the effects: they emerge from the integration.</p>
+      <ul>
+        <li><b>Shadow</b>: rays that fall below the horizon stay black.</li>
+        <li><b>The Interstellar arc</b>: rays bent over the top hit the far side of the disk.</li>
+        <li><b>Photon ring</b>: rays that orbit and cross the disk several times.</li>
+        <li><b>Disk</b>: thin-disk temperature profile; turbulence in a co-rotating frame with Keplerian speeds that wind it into spirals; hot spots flaring on the snare.</li>
+        <li><b>Relativity</b>: Doppler factor from the orbital velocity and gravitational redshift — the approaching side is brighter and bluer. A <em>doppler</em> knob blends it from cinematic-symmetric to physical.</li>
+      </ul>
+    </div>
+    <pre class="code">pos = camera;  dir = rd;  h² = |pos × dir|²
+<span class="k">repeat</span> up to N steps:
+    r = |pos|
+    <span class="k">if</span> r &lt; 1: <span class="k">return</span> black                 <span class="c">// captured</span>
+    <span class="k">if</span> escaping: <span class="k">break</span>
+    dt   = clamp(0.12·(r − 1), 0.012, 1.5)
+    dir += −1.5 · h² · pos / r⁵ · lensing · dt
+    prev = pos;  pos += dir · dt
+
+    <span class="k">if</span> sign(prev.y) ≠ sign(pos.y):            <span class="c">// crossed the disk plane</span>
+        p = lerp to y = 0;  r = |p.xz|
+        <span class="k">if</span> inner &lt; r &lt; outer:
+            T    = (r₀/r)^¾ · (1 − √(r₀/r))^¼ / 0.488
+            φ    = atan(p.z, p.x) − r^(−1.5)·speed·t   <span class="c">// Keplerian</span>
+            turb = fbm(cos/sin(φ + 2.5 ln r)·2, r·2.5)
+            β    = √(0.5/(r − 1));  δ = 1/(γ(1 − β·toObserver))
+            g    = √(1 − 1/r);      shift = mix(1, δ·g, doppler)
+            c    = blackbody(T·shift·temp) · T² · shift³ · (0.4 + 1.6·turb + spots)
+            color += (1 − α)·c·a;  α += (1 − α)·a   <span class="c">// front to back</span>
+    jets(pos)                                    <span class="c">// optional polar glow</span>
+color += (1 − α) · lensedBackground(dir)</pre>
+  </div>
+  <div class="knobs">Tunables: <span>inclination</span><span>distance</span><span>lensing</span><span>doppler</span><span>disk radii</span><span>temperature</span><span>jets</span><span>quality</span></div>
+  <div class="folio">BLACK HOLE</div>
+</section>
+
+<!-- ============================== 15 CREDITS ============================== -->
+<section class="page hero">
+  <img src="images/credits-b.jpg" alt="">
+  <div class="shade"></div>
+  <div class="caption">
+    <div class="num">15</div><h2>End credits</h2>
+    <div class="tagline">Vector balls spelling the name, credits and greetings rising in the 8×8 font — and back to the start.</div>
+  </div>
+  <div class="folio">END CREDITS</div>
+</section>
+<section class="page tech">
+  <header><div class="num">15</div><h2>Credits · vector balls</h2></header>
+  <div class="thumbs">
+    <figure><img src="images/credits-a.jpg" alt=""><figcaption>The torus knot, while the credits roll up the right.</figcaption></figure>
+    <div class="pull">The word is spelled with the font's own pixels.</div>
+  </div>
+  <div class="cols">
+    <div>
+      <p>The demoscene's traditional closer. 128 glossy spheres — one instanced draw — morph every eight beats
+      between shapes computed at start-up. The word <em>SPACE</em> is not modelled: its ball positions are the set
+      pixels of the same 8×8 font used everywhere else, read back on the CPU.</p>
+      <ul>
+        <li>Each ball starts its morph a fraction of a beat after the previous one: a <b>ripple</b>.</li>
+        <li>The cluster spins, but unwinds to face the camera while it spells the word, by the nearest whole turn, picked once as the morph starts, so it never jumps.</li>
+        <li>The balls pulse on the beat; shading is a sharp key light, a magenta rim and a reflected studio environment.</li>
+        <li>The <b>scroller</b> maps each screen row to a line of a text texture and fades in and out at the edges.</li>
+      </ul>
+    </div>
+    <pre class="code">shapes = [ fibonacciSphere, lattice 5³, torusKnot(2,3),
+           doubleHelix, fontPixels("SPACE"), spiral ]
+beat    = t · bpm / 60
+current = ⌊beat / 8⌋ mod 6;   into = beat mod 8
+yaw     = mix(0.6t, 0.25·sin(0.5t) + 2π·turns, facing)
+          <span class="c">// turns: fixed when the morph starts</span>
+
+<span class="k">for</span> ball i <span class="k">in</span> 0..127:
+    m   = smoothstep(i·0.006, 2 + i·0.006, into)   <span class="c">// ripple</span>
+    p   = mix(shapes[previous][i], shapes[current][i], m)
+    pos = center + rotate(yaw, pitch) · p · 1.3
+    radius = 0.09 · p.visible · (1 + 0.3·beatPulse)
+    tint   = cosinePalette(i/128 + 0.05t)
+
+<span class="c">// scroller.frag</span>
+line = ⌊(fromTop − screenH + scroll) / lineHeight⌋
+cell = (x − columnLeft(line)) / pixelSize
+<span class="k">if</span> fontTexel(textTexture[line], cell):
+    color = palette(line + t) · bevel;  alpha = fade(y)</pre>
+  </div>
+  <div class="knobs">Tunables: <span>scroll speed</span><span>focal</span></div>
+  <div class="folio">END CREDITS</div>
+</section>
+
+<!-- ============================== APPENDIX ============================== -->
+<section class="page text-page">
+  <div class="kicker">A · Techniques appendix</div>
+  <h2>The common toolbox</h2>
+  <div class="accent"></div>
+  <div class="two" style="grid-template-columns: 1fr 1fr; gap: 9mm;">
+    <div>
+      <h3>Noise, everywhere</h3>
+      <p>Float hashes ("hash without sine") drive most per-pixel effects; integer <b>PCG</b> hashes take over when ids
+      reach the millions. Value noise interpolates hashed lattice corners with a smooth curve; <b>fbm</b> sums
+      octaves at doubling frequency and halving amplitude. <b>Worley</b> (cellular) noise measures the distance to
+      the nearest random feature point — inverted, it makes billows and filaments.</p>
+      <h3>The noise volume</h3>
+      <p>Volumetric scenes need hundreds of noise lookups per pixel. A compute shader bakes a 128³ RG8 texture once:
+      every octave uses a period that divides the volume, hashing coordinates <em>modulo the period</em>, so the
+      texture tiles seamlessly in all three directions and hardware trilinear filtering does the rest.</p>
+      <h3>Integrating a volume</h3>
+      <p>All marched media use the same step: emission and in-scattered light <em>S</em>, extinction <em>σ</em>.
+      Integrating analytically over a step of constant medium keeps results independent of the step count, and a
+      per-pixel jitter of the start turns banding into fine grain hidden by the film grain.</p>
+      <pre class="code">L += T · S · (1 − e^(−σΔt)) / σ
+T ·= e^(−σΔt)
+HG(cosθ, g) = (1 − g²) / (1 + g² − 2g·cosθ)^1.5    <span class="c">// isotropic = 1</span></pre>
+    </div>
+    <div>
+      <h3>Shadows</h3>
+      <p>Directional lights use cascaded shadow maps: each cascade is an orthographic box around a sphere, extended
+      toward the light to catch distant occluders, and <b>snapped to whole texels</b> so shadows don't shimmer as the
+      camera moves. Lookups offset the position along the normal and average 12 Poisson taps rotated per pixel.</p>
+      <h3>Bump mapping without tangents</h3>
+      <p>Procedural meshes have no UVs. Surface detail perturbs the normal using screen-space derivatives of the world
+      position and of a height field (Mikkelsen's method), so any noise can become relief.</p>
+      <h3>Post-processing</h3>
+      <p>Scenes output linear HDR. Bloom thresholds softly, downsamples with a 13-tap filter (with a Karis average on the
+      first pass against flickering highlights) and upsamples with a tent filter into a 6-level chain. Chromatic
+      aberration grows toward the corners; ACES compresses highlights; grain dithers away banding.</p>
+      <pre class="code">shadow(p) = mean over 12 taps of
+            compare(cascadeMatrix · (p + n·1.5 texel), rotate(φ_pixel)·poisson_k)
+N' = normalize(|det|·N − strength · sign(det)·(dh/dx·r₁ + dh/dy·r₂))</pre>
+    </div>
+  </div>
+  <div class="folio">APPENDIX</div>
+</section>
+
+<section class="page text-page">
+  <div class="kicker">A · Techniques appendix</div>
+  <h2>Sound, time and procedure</h2>
+  <div class="accent"></div>
+  <div class="two" style="grid-template-columns: 1fr 1fr; gap: 9mm;">
+    <div>
+      <h3>A song made of code</h3>
+      <p>The placeholder soundtrack is a four-channel ProTracker module assembled byte by byte in memory: a kick from a
+      pitch-swept sine, a snare and hats from filtered noise, a single-cycle saw bass and a pulse lead playing
+      arpeggios. libopenmpt plays it with Amiga-style resampling.</p>
+      <h3>Sync without callbacks</h3>
+      <p>Instead of reacting to audio events, the demo scans the module once at load time — rendering it silently at
+      8 kHz and noting every row change and note-on with a 2 ms resolution. Scenes query the resulting table by
+      time, which keeps sync exact while scrubbing, pausing or looping.</p>
+      <pre class="code">scan(module):
+    <span class="k">while</span> render(16 frames at 8 kHz) &gt; 0:
+        <span class="k">if</span> (order, row) changed:
+            rows += (time, order, row)
+            <span class="k">for</span> channel: <span class="k">if</span> noteOn: hits[channel] += time,
+                                    hits[instrument] += time
+sinceInstrument(i, t) = t − last(hits[i] ≤ t)
+pulse = e^(−since · decay)</pre>
+    </div>
+    <div>
+      <h3>Geometry from rules</h3>
+      <p>Meshes are assembled from a few generators: subdivided icospheres (rocks, domes, balls), lofts of polygon
+      cross-sections (hulls, wings, nozzles, boxes), and appended copies with transforms that flip winding when
+      mirrored. Faces are oriented outward automatically, and flat shading duplicates vertices per face for crisp
+      hard-surface edges.</p>
+      <h3>Transitions as files</h3>
+      <p>A transition is any shader in <em>shaders/transitions/</em> that receives the outgoing and incoming frames
+      and a progress value: crossfade, an HDR white flash peaking on the cut, a slanted wipe with a glowing edge, a
+      pixel dissolve, a digital glitch. Adding one is adding a file.</p>
+      <h3>One rule</h3>
+      <p>Everything in this book obeys the same contract: <b>an image is a function of time</b>. It is what lets a
+      five-minute demo be edited live, scrubbed like a video, and photographed beat by beat for these pages.</p>
+    </div>
+  </div>
+  <div class="folio">APPENDIX</div>
+</section>
+
+<!-- ============================== COLOPHON ============================== -->
+<section class="page hero">
+  <img src="images/dreadnought-d.jpg" alt="" style="filter: brightness(0.55);">
+  <div class="shade" style="background: linear-gradient(90deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0.1) 100%);"></div>
+  <div style="position: absolute; left: 18mm; top: 22mm; width: 150mm;">
+    <div class="kicker">B · Colophon</div>
+    <h2 style="margin-top: 2mm;">Space Travel</h2>
+    <div class="accent"></div>
+    <p><b>Direction and design:</b> blacklizard<br><b>Code:</b> Claude</p>
+    <p>C++20, OpenGL 4.6 core, GLSL. SDL3 for windowing, input and audio; libopenmpt for the tracker music; Dear ImGui
+    for the development overlay; glm, glad and stb. Built with CMake and vcpkg; the distribution build is a single
+    statically linked executable with its shaders and timeline beside it.</p>
+    <p>Designed for, and captured on, a laptop with an AMD Radeon 880M integrated GPU. Every image is a frame of the
+    running program at 1920×1080, captured with <em>--capture</em> at a chosen beat.</p>
+    <p>A companion set of interactive pages, <em>docs/explainer/</em>, runs each scene's real shaders in the browser,
+    with sliders, for readers who want to see the ideas of this book at work.</p>
+    <p style="color: #9aa0c0;">Greetings to all Amiga and PC demosceners, past and present.<br>See you in hyperspace.</p>
+  </div>
+  <div class="folio">COLOPHON</div>
+</section>
+
+</body>
+</html>

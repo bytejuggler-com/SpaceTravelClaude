@@ -1,0 +1,21 @@
+{
+  "name": "space-travel-demo",
+  "version-string": "0.1.0",
+  "dependencies": [
+    "sdl3",
+    {
+      "name": "glad",
+      "features": [ "gl-api-46" ]
+    },
+    "glm",
+    {
+      "name": "imgui",
+      "features": [ "sdl3-binding", "opengl3-binding" ]
+    },
+    "stb",
+    {
+      "name": "libopenmpt",
+      "default-features": false
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+# Space Travel — demo timeline. Dev builds reload this file when it is saved.
+#
+#   scene     duration  [transition [length]]  [key=value ...]
+#
+# duration / length: seconds (7.5) or beats (16b, using @bpm).
+# transition: "none" (cut) or any shader name in shaders/transitions/ (crossfade, flash, wipe, dissolve, glitch).
+# It blends in from the previous entry during the first <length> of this entry; the first entry fades in from
+# black and, when the demo loops, from the last entry.
+# Params are passed to the scene (see the comment at the top of each src/scenes/<name>/*Scene.cpp);
+# post.<name>=value overrides post settings for this entry
+# (exposure, bloom, threshold, knee, radius, chromatic, vignette, grain).
+#
+# Directives:
+#   @bpm 125                       tempo for beat durations and the scenes' beat grid
+#   @music placeholder             generated ProTracker song (default); "none" = silence;
+#                                  or a module path relative to this folder, e.g. music/track.xm
+#
+# Available scenes: intro, hstars, pillars, warp, corona, asteroids, rings, canyon, fleet, dreadnought,
+#                   supernova, wormhole, galaxy, blackhole, credits
+#                   (plus nebula and neongrid, early placeholders kept as small code examples).
+# Keep entries in multiples of 16 beats: one pattern of the placeholder song, so scene changes land on
+# musical sections. Placeholder instruments: 1 kick, 2 snare, 3 hi-hat, 4 bass, 5 lead.
+
+@bpm   125
+@music placeholder
+
+# Departure: title, cruising out through a nebula, jump to hyperspace.
+intro       32b   crossfade 2b
+hstars      16b   crossfade 2b
+pillars     48b   crossfade 2b
+warp        16b   crossfade 1b
+
+# Hyperspace exit at a giant star; through its asteroid belt to a ringed giant, down to one of its moons.
+corona      32b   flash     1b
+asteroids   32b   crossfade 2b
+rings       48b   crossfade 2b
+canyon      48b   crossfade 2b
+
+# The fleet drops out of hyperspace; the dreadnought up close (low bloom keeps the hull detail readable).
+fleet       32b   flash     1b   post.bloom=0.2 post.threshold=2.0
+dreadnought 80b   crossfade 2b   post.bloom=0.15 post.threshold=2.5
+
+# The star dies; a wormhole opens onto another galaxy...
+supernova   48b   crossfade 2b
+wormhole    32b   crossfade 2b
+galaxy      64b   crossfade 1b
+
+# ...the black hole at its core, and the credits. The demo then loops back to the title.
+blackhole   32b   crossfade 3b
+credits     64b   crossfade 3b
