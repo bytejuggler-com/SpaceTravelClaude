@@ -1,0 +1,19 @@
+# Normalize line endings: text files are stored with LF in the repository and
+# checked out with the platform's native ending (CRLF on Windows).
+* text=auto
+
+# Never touch binary files
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.webp   binary
+*.gif    binary
+*.bmp    binary
+*.ico    binary
+*.pdf    binary
+*.zip    binary
+*.wav    binary
+*.mod    binary
+*.dxil   binary
+*.dll    binary
+*.exe    binary
