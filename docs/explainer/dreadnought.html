@@ -153,7 +153,8 @@ a JS mirror of <code>render()</code>. Drag <b>time</b> to scrub the whole 38.4 s
   <div class="readout" style="margin-top: 6px;">Differences from the demo: WebGL2 has no storage buffers, so <code>mesh.vert</code> and
   <code>shadow.vert</code> read the ship's model matrix from a uniform; the Poisson array gets an explicit size, the shadow sampler a
   precision qualifier; WebGL has no clamp-to-border, so taps past a cascade's edge clamp instead of reading "lit". The demo's post chain
-  (thresholded bloom, chromatic aberration, vignette, grain) is replaced by ACES tone mapping and a simple glow from blurred copies of the frame, thresholded at 2.5 like this entry's bloom. Where C++ leaves the order of
+  (bloom, chromatic aberration, vignette, grain) is replaced by ACES tone mapping and a glow with a hard threshold of 2.5 on blurred
+  samples. The demo uses a soft knee, which starts admitting light above a brightness of 1.25 at this entry's threshold of 2.5. Where C++ leaves the order of
   three random calls unspecified (underside plate sizes), the port takes them left to right, so a few belly plates may differ. The sky's stars are sized for the demo's 1080-line frame rather than this canvas' pixels, so they are not fattened by the smaller resolution.</div>
 </div>
 

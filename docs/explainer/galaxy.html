@@ -181,17 +181,19 @@ of the 32 bits takes part in the scramble.</p>
 <h3 id="sampling">2 · Sampling a distribution</h3>
 <p>A hash gives a <b>uniform</b> number <code>u</code>: every value between 0 and 1 is equally likely. But a galaxy is not uniform.
 Real disc galaxies get fainter roughly <b>exponentially</b> with radius (Ken Freeman described this in 1970): every few thousand
-light-years outward, the light drops by the same factor. We need a recipe that turns a uniform <code>u</code> into a radius
-<code>a</code> with the right odds.</p>
+light-years outward, the light drops by the same factor. Inspired by that profile, the demo samples an exponential distribution
+of orbital semi-major axes <code>a</code>. This is an artistic shortcut, not an exact exponential surface-density model.</p>
 <p>The recipe is <b>inverse transform sampling</b>. Write down the <em>cumulative distribution</em> F(a): the fraction of stars with a
-radius smaller than <code>a</code>. It climbs from 0 at the center to 1 at the edge. Pick <code>u</code> uniformly, and find the
-radius where F(a) = u. Where F climbs steeply (many stars), a wide range of <code>u</code> maps into a small range of radii, so
-radii there come up often. For an exponential disc with scale length <code>h</code> = 28, cut off at the edge <code>E</code> = 110,
+semi-major axis smaller than <code>a</code>. It climbs from 0 to 1 at the maximum axis length. Pick <code>u</code> uniformly, and find the
+axis length where F(a) = u. Where F climbs steeply (many stars), a wide range of <code>u</code> maps into a small range of axis lengths, so
+those lengths come up often. For <code>p(a) ∝ exp(−a/h)</code> with scale length <code>h</code> = 28, cut off at <code>E</code> = 110,
 the equation F(a) = u can be solved exactly:</p>
 <div class="formula">a = −h · ln(1 − u · (1 − e<sup>−E/h</sup>))</div>
-<p>That is <code>diskRadius(u)</code> in <code>galaxy.glsl</code>. Half of the disc stars land inside <code>a</code> ≈ 18.9. The bulge
+<p>That is <code>diskRadius(u)</code> in <code>galaxy.glsl</code>. Half of the disc stars have semi-major axes below ≈ 18.9; their
+instantaneous distances also depend on their elliptical orbits. In a circular disc, an exponential surface density
+<code>Σ(r) ∝ exp(−r/h)</code> would instead require <code>p(r) ∝ r · exp(−r/h)</code>, because outer annuli have more area. The bulge
 uses a simpler shortcut, <code>a = 14 · u<sup>1.6</sup></code>: raising <code>u</code> to a power above 1 pushes values toward 0, so
-bulge stars pile up toward the center (half are within 4.6 units). There is another classic way to sample, <b>rejection
+bulge stars pile up toward the center (half have semi-major axes below 4.6 units). There is another classic way to sample, <b>rejection
 sampling</b> — throw random candidates and discard some — but a vertex shader must produce exactly one star per vertex, with no
 retries, so a direct formula is the right tool.</p>
 <div class="figure">

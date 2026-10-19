@@ -137,8 +137,8 @@ loads, by the demo's own noise generator. Drag the <b>time</b> slider to scrub: 
   Turn off <em>tunnel &amp; exit</em> and scrub to the end: the camera never goes inside — it stops just outside the sphere.</div>
   <p class="readout" style="margin-top: 6px;">Changes for WebGL: <code>#version 300 es</code> and precision qualifiers; the noise
   volume generator (a compute shader in the demo) runs as a fragment shader drawing the 128 slices of the 128³ texture one by one.
-  The demo's post chain (bloom, chromatic aberration, grain) is replaced by a simple ACES tone map and a thresholded glow
-  (only HDR values above 1.0 glow, like the demo's bloom threshold). One line differs in the shader: the stars of
+  The demo's post chain (bloom, chromatic aberration, grain) is replaced by a simple ACES tone map and a glow with a hard threshold of
+  1.0 on blurred samples. The demo's soft knee starts admitting light above a brightness of 0.5 at that threshold. One line differs in the shader: the stars of
   <code>sky.glsl</code> are sized in pixels, so their <code>pixelAngle</code> uses the demo's 1080-line frame instead of this
   smaller canvas — otherwise every star would cover several times more of the picture than in the demo.</p>
 </div>

@@ -115,8 +115,9 @@ Hubble's famous 1995 photograph of the "Pillars of Creation" in the Eagle Nebula
 bouncing off a surface. There is no pillar geometry. For every pixel, a ray leaves the camera and takes up to 96 fixed steps into
 the nebula. At each step it asks three questions: <b>how dense is the dust here</b> (a distance function, eroded by 3D noise),
 <b>how much starlight reaches this point</b> (a short second march toward the cluster), and <b>how much of that light is
-redirected toward the camera</b> (a phase function). It adds the answers up with a formula that stays correct however big the
-steps are, while keeping track of how much of the background is still visible. Shadows, light shafts and rims are not separate
+redirected toward the camera</b> (a phase function). It adds the answers up with a formula that is exact within each step if density
+and source light stay constant across it, while keeping track of how much of the background is still visible. Sampling the varying
+nebula still introduces error, especially with large steps. Shadows, light shafts and rims are not separate
 effects: they all fall out of that one loop. This page builds it up one idea at a time.</p>
 <div class="note tip">You don't need graphics experience to follow along. Each section introduces one concept, with a small
 interactive figure. Code appears in two forms: <b>pseudo-code</b> (plain logic) and the <b>real GLSL</b> that runs in the demo.</div>
@@ -232,8 +233,10 @@ light from a step of length Δt, seen through its own dust, is</p>
 <p>which is what <code>volume.frag</code> adds (times the <code>T</code> in front). For thin dust it reduces to <code>S·Δt</code>;
 for very thick dust it tends to <code>S / σ</code> — the light of one mean free path, which is all you can ever see of an opaque
 glowing material. The demo uses the plain <code>dt</code> fallback only when <code>σ</code> is essentially zero, to avoid dividing by
-zero. This form (popularized for real-time use by Sébastien Hillaire's 2015 talk on physically based volumetrics at Frostbite) is why the
-art book says "results don't depend on the step size": change <code>steps</code> in the live demo and the brightness stays put.</p>
+zero. This form (popularized for real-time use by Sébastien Hillaire's 2015 talk on physically based volumetrics at Frostbite) removes
+the plain sum's coarse-step brightness bias for constant <code>σ</code> and <code>S</code>. The art book's "results don't depend on
+the step size" describes that uniform case. In the actual nebula, density, lighting and shadows vary between samples, so changing
+<code>steps</code> can still change the brightness and detail.</p>
 <div class="figure">
   <canvas id="figIntegral" width="980" height="300"></canvas>
   <div class="controls" id="integralControls"></div>

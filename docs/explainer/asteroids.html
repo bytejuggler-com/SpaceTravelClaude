@@ -147,8 +147,8 @@ sharpness for speed.</div>
   with explicit sizes and precision qualifiers were added. The field uses the same Mersenne Twister seeds, but C++ does not fix the
   order in which constructor arguments are evaluated, so individual rocks may land elsewhere than in the demo. The music beat that
   pulses the engines is a plain 0.48 s clock. The demo's post-processing (bloom, chromatic aberration, grain) is replaced by
-  ACES tone mapping and a glow taken from the image's mipmaps, thresholded at 1.0 like the demo's bloom, as on the other explainer
-  pages. The stars of <code>sky.glsl</code> are sized in pixels, so here they are sized for the demo's 1080-line frame instead of
+  ACES tone mapping and a glow with a hard threshold of 1.0 on blurred mip samples. The demo's soft knee starts admitting light
+  above a brightness of 0.5 at that threshold. The stars of <code>sky.glsl</code> are sized in pixels, so here they are sized for the demo's 1080-line frame instead of
   this smaller canvas.</div>
 </div>
 

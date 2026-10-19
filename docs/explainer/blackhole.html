@@ -115,8 +115,9 @@ the top of the shadow, and to curl underneath it. Near the shadow the background
 near the inner edge of the disk flare on the snare drum.</p>
 <p>The core trick, in plain words: for every pixel the shader shoots a ray of light out of the camera and moves it forward in
 <b>small steps</b>. At each step it nudges the ray's direction toward the hole by an amount given by one formula. Where the bent
-path crosses the plane of the disk, the disk's light at that point is added; if the path falls into the hole, the pixel stays
-black; if it escapes, the pixel shows the sky in whatever direction the ray ended up pointing. None of the effects above is
+path crosses the plane of the disk, the disk's light at that point is added. If the path falls into the hole, no background sky is
+added, but any disk or jet light already gathered remains. If it escapes, the sky along the ray's final direction is added through
+the remaining transparency. None of the effects above is
 drawn on purpose. The shadow, the ring, the arc and the distorted stars all <em>emerge</em> from bending the rays.</p>
 <div class="note tip">You don't need a physics or graphics background to follow along. Each section introduces one idea with a
 small interactive figure. Code appears in two forms: <b>pseudo-code</b> (plain logic) and the <b>real GLSL</b> that runs in the
@@ -141,7 +142,8 @@ by a simple ACES tone mapping and glow.</p>
   to see it from underneath. Drop <em>quality</em> to 0.25 and watch the thin rings break up: too few steps.</div>
   <div class="note" style="margin-bottom: 0;">Differences from the demo: the snare pulse that makes the hot spots flare is
   approximated by a hit on beats 2 and 4 of every bar — the demo reads the real note-ons from the music — and the glow is a simple
-  stand-in for the demo's bloom (only light brighter than 1.0 glows, as with the demo's bloom threshold). The shader code itself is
+  stand-in for the demo's bloom: the browser uses a hard threshold of 1.0 on blurred samples; the demo's soft knee starts admitting
+  light above a brightness of 0.5 at that threshold. The shader code itself is
   unchanged apart from one line: the stars of <code>sky.glsl</code> are sized in pixels, so here they are sized for the demo's 1080-line frame instead of this smaller canvas (otherwise each star would cover several times more of the picture). If the frame rate is low, lower the <em>render scale</em> (the same knob as in the demo).</div>
 </div>
 
@@ -204,7 +206,7 @@ the path. The shader computes <code>h²</code> once per pixel (<code>h2</code>) 
 sharply and steps must be short. <code>dt = clamp(0.12 · (r − 1), 0.012, 1.5)</code> does that: 1.5 units far away, shrinking
 in proportion to the distance from the horizon, never below 0.012. A ray from the camera reaches the hole's neighborhood in a few
 dozen steps. The <em>quality</em> knob multiplies the step budget (<code>220 × quality</code>) and divides the step size.</p>
-<p><b>Three ways to stop.</b> <code>r &lt; 1</code>: the ray fell through the horizon — the pixel stays black.
+<p><b>Three ways to stop.</b> <code>r &lt; 1</code>: the ray fell through the horizon — omit the background sky, retaining any disk or jet light already gathered.
 <code>r &gt; cameraDistance + 20</code> while moving outward: it escaped — look up the sky along its final direction. Out of steps:
 treated like an escape.</p>
 <div class="figure">

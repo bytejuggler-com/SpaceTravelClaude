@@ -138,8 +138,8 @@ vignette, grain) is replaced by a simple ACES tone mapping and glow.</p>
   and the rings' shadow on the planet (then switch <em>shadows</em> off to compare).</div>
 </div>
 <p style="font-size: 14px; color: var(--dim);">Port notes: the planet shader is line for line the demo's (plus <code>#version</code>/precision
-and one explainer-only <code>uShadows</code> switch). The glow is a thresholded stand-in for the demo's bloom: like the
-demo's bloom threshold of 1.0, only HDR values above 1 glow, so the background stars stay fine points. Those stars (from
+and one explainer-only <code>uShadows</code> switch). The glow uses a hard threshold of 1.0 on blurred samples; the demo's soft knee
+starts admitting light above a brightness of 0.5 at that threshold. Those stars (from
 <code>sky.glsl</code>) are sized in pixels, so here they are sized for the demo's 1080-line frame instead of this smaller canvas. WebGL2 has no storage buffers and no <code>gl_BaseInstance</code>, so
 <code>common/mesh.vert</code> reads each chunk's matrix and colour from instanced vertex attributes instead; <code>ice.frag</code>
 is unchanged. The four chunk meshes come from a JavaScript port of <code>makeAsteroid()</code>; its random generator is the same

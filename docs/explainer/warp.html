@@ -116,9 +116,11 @@ interactive figure. Code appears in two forms: <b>pseudo-code</b> (plain logic) 
 
 <h2 id="live-demo">Live: the real shaders</h2>
 <div class="accent"></div>
-<p>This is the actual warp scene: the same vertex and fragment shaders as the demo, ported line for line to WebGL2 (the only
-changes are the <code>#version</code> line and precision qualifiers). The only thing missing is the demo's full post-processing
-chain, replaced here by a simple tone mapping and glow. Drag the <b>time</b> slider to scrub: because every frame is a pure
+<p>This is the warp scene ported to WebGL2, with version and precision changes, included helpers pasted in, and explicit array sizes.
+An explainer-only <code>uEnergy</code> switch lets you disable the streak-length compensation that the demo always applies.
+The browser sets <code>uKick</code> to zero: it omits the music-driven kick pulse that can boost the demo's star brightness by
+60 %. The demo's full post-processing chain is replaced here by simple tone mapping and glow.
+Drag the <b>time</b> slider to scrub: because every browser frame is a pure
 function of time, scrubbing is just "render the frame for this time".</p>
 <div class="figure">
   <canvas id="live"></canvas>

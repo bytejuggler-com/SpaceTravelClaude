@@ -145,8 +145,8 @@ one slice at a time; it has no storage buffers, so the fighter's per-instance ma
 noise volume use <code>textureLod(…, 0.0)</code> (identical, the volume has a single mip level) so that loops with
 <code>break</code> compile on every browser backend. <em>Step factor</em>, <em>bisection</em>, <em>flight height</em> and the
 <em>view</em> modes are explainer-only knobs: the demo hard-codes 0.3, 5 and 9. The demo renders the terrain at scale 0.6 (0.5 here
-by default) and finishes with its full post chain (bloom, chromatic aberration, grain), replaced here by ACES tone mapping and a thresholded glow — a stand-in for the demo's bloom,
-where only HDR values above 1.0 (the engines, the sun) glow.</div>
+by default) and finishes with its full post chain (bloom, chromatic aberration, grain), replaced here by ACES tone mapping and a glow
+with a hard threshold of 1.0 on blurred samples. The demo's soft knee starts admitting light above a brightness of 0.5 at that threshold.</div>
 
 <h2 id="background">Background</h2>
 <div class="accent"></div>

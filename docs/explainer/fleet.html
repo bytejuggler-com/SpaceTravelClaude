@@ -145,9 +145,10 @@ of time.</p>
 <div class="note"><b>What differs from the demo.</b> WebGL2 has no storage buffers and no <code>gl_BaseInstance</code>, so the
 per-instance data reaches the vertex shader through <em>instanced vertex attributes</em> (§3) instead of an SSBO; the shadow map wraps
 with <code>CLAMP_TO_EDGE</code> because WebGL2 has no border color; the Poisson table in <code>lighting.glsl</code> gets an explicit
-array size. Everything else in the shaders is the demo's code. The post chain (13-tap bloom with a threshold, chromatic aberration,
-vignette, grain) is replaced by a light stand-in: ACES tone mapping plus a glow made from blurred mip levels of the frame, keeping only
-what exceeds the fleet's threshold of 2.0, with the <em>glow</em> slider defaulting to the fleet's bloom intensity of 0.2. The one-beat flash transition from the canyon is not reproduced. The stars of <code>sky.glsl</code> are sized in pixels, so here
+array size. Everything else in the shaders is the demo's code. The post chain (13-tap bloom with a soft knee, chromatic aberration,
+vignette, grain) is replaced by a light stand-in: ACES tone mapping plus a glow with a hard threshold of 2.0 on blurred mip samples.
+The demo's soft knee starts admitting light above a brightness of 1.0 at the fleet's threshold of 2.0. The <em>glow</em> slider defaults
+to the fleet's bloom intensity of 0.2. The one-beat flash transition from the canyon is not reproduced. The stars of <code>sky.glsl</code> are sized in pixels, so here
 they are sized for the demo's 1080-line frame instead of this smaller canvas.
 The ship's random detail uses a JavaScript Mersenne Twister with the demo's seed; tiny floating-point differences between C++ and
 JavaScript can move an occasional block.</div>
@@ -319,12 +320,14 @@ skipped.</p>
   <div class="caption"><b>flashes.frag, evaluated in JavaScript</b> for one ship. Drag the tail and the head; scrub the time since
   arrival. <b>Right:</b> the two falloff profiles — note the long, faint tails that make the glow feel large without a hard edge.</div>
 </div>
-<p><b>Why the bloom is turned down.</b> The demo's post chain extracts everything brighter than a <em>threshold</em> from the HDR frame,
-blurs it over six mip levels, and adds it back scaled by an <em>intensity</em> (the 13-tap downsample from Jimenez's 2014 Call of Duty
-talk, with a soft "knee" so the cut-off is gradual). The default — threshold 1, intensity 0.5 — suits glowing nebulae, but a sunlit
+<p><b>Why the bloom is turned down.</b> The demo's post chain extracts bright light from the HDR frame using a <em>threshold</em>
+with a soft "knee", blurs it over six mip levels, and adds it back scaled by an <em>intensity</em> (the 13-tap downsample from Jimenez's
+2014 Call of Duty talk). Brightness is the maximum RGB channel of each filtered sample. With the default knee width of half the
+threshold, contribution starts above half the threshold: 0.5 by default, 1.0 for the fleet, and 1.25 for the dreadnought.
+The default — threshold 1, intensity 0.5 — suits glowing nebulae, but a sunlit
 grey hull stays below about 0.9 and its specular highlights and windows go well above 1: the fine plating would dissolve into a haze. The
-fleet raises the threshold to 2 and lowers the intensity to 0.2, so only the true light sources — engines, flashes, the brightest
-windows — bloom, and the hull detail stays crisp. The dreadnought scene goes further still (2.5 and 0.15).</p>
+fleet raises the threshold to 2 and lowers the intensity to 0.2, so bloom mainly emphasizes the engines, flashes and brightest
+windows, and the hull detail stays crisp. The dreadnought scene goes further still (2.5 and 0.15).</p>
 <div class="figure">
   <canvas id="figBloom" width="980" height="240"></canvas>
   <div class="controls" id="bloomControls"></div>
@@ -570,7 +573,7 @@ listed under the live demo.</p>
   <dt>Ray-sphere intersection</dt><dd>Solving a quadratic to find where a ray enters a sphere, or how close it passes.</dd>
   <dt>HDR</dt><dd>High dynamic range: keeping brightness values above 1.0 until a final tone-mapping step.</dd>
   <dt>Tone mapping (ACES)</dt><dd>A curve compressing HDR brightness into the screen's range while keeping highlights pleasant.</dd>
-  <dt>Bloom, threshold, knee</dt><dd>The glow around very bright areas; only brightness above the threshold contributes, with a soft knee easing the cut-off.</dd>
+  <dt>Bloom, threshold, knee</dt><dd>The glow around bright areas; the soft knee admits some light below the nominal threshold, beginning above threshold minus knee width.</dd>
 </dl>
 <p style="margin-top: 30px; color: var(--dim); font-size: 14px;">Part of the <b>Space Travel</b> documentation. Direction &amp; design: blacklizard ·
 Code: Claude. The figures on this page are computed live in your browser; nothing is pre-rendered except the header image.</p>

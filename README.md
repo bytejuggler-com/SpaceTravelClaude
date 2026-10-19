@@ -74,3 +74,10 @@ If an edit doesn't compile, the previous version keeps running and the error sho
 - [docs/explainer/index.html](docs/explainer/index.html): one interactive page per scene. Each runs the scene's real shaders
   in WebGL2 and explains the techniques from first principles with live figures, pseudo-code and the actual source. Every
   page is a single self-contained file that works offline.
+
+## License
+
+- **Code** (everything outside `docs/`): [MIT License](LICENSE).
+- **Documentation** (`docs/`: art book, images, explainer text): [Creative Commons Attribution 4.0](docs/LICENSE.md) (CC BY 4.0).
+
+Copyright (c) 2026 BlackLizard (bytejuggler.com). Third-party libraries fetched at build time (SDL3, libopenmpt, Dear ImGui, glm, glad, stb) keep their own licenses.

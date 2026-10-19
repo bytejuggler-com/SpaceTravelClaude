@@ -140,7 +140,8 @@ Drag the <b>time</b> slider to scrub: every frame is a pure function of time.</p
   line, precision qualifiers and inlining the <code>common/</code> helpers it includes — plus one line: the sky's stars are sized for the
   demo's 1080-line frame rather than this smaller canvas, so they keep the demo's apparent size. On some systems the star shader takes a
   few seconds to compile; the readout shows it. The demo's post chain (bloom, chromatic aberration,
-  vignette, grain) is replaced by ACES tone mapping and a thresholded mip-map glow (only HDR values above 1 glow, like the demo's bloom threshold). During the first half of the flash the demo still shows the
+  vignette, grain) is replaced by ACES tone mapping and a glow with a hard threshold of 1.0 on blurred mip samples. The demo's soft knee
+  starts admitting light above a brightness of 0.5 at that threshold. During the first half of the flash the demo still shows the
   warp's last frame; here it shows the star. The music pulses are computed from the placeholder song's pattern data (first pass of
   the demo, audio latency ignored).</div>
 </div>

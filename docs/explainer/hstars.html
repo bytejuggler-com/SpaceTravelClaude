@@ -138,8 +138,8 @@ scrub: because every frame is a pure function of time, scrubbing is just "render
 <div class="note">Port notes: the shaders are the demo's files with only the <code>#version</code> / precision lines changed and
 the <code>#include</code>d helpers pasted in (<code>quadCorner</code>'s array constructor is written with an explicit size,
 <code>vec2[6](…)</code>, as in the other explainers). The demo's post chain (bloom, chromatic aberration, vignette, grain) is
-replaced by ACES tone mapping and a thresholded mip-based glow (only HDR values above 1.0 glow, like the demo's bloom
-threshold), the two-beat crossfade from the intro is not shown, and the beat pulse is
+replaced by ACES tone mapping and a glow with a hard threshold of 1.0 on blurred mip samples. The demo's soft knee starts admitting
+light above a brightness of 0.5 at that threshold. The two-beat crossfade from the intro is not shown, and the beat pulse is
 computed from the 125 BPM grid instead of the music player. Because star sizes are in pixels, the frame is rendered 1080 lines
 high, like the art-book captures, and scaled to fit the canvas; untick "render 1080 lines high" to render at the canvas's own
 resolution and see the same stars become relatively bigger and the field denser.</div>

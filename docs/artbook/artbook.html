@@ -183,7 +183,7 @@
     <div class="stage"><b>Timeline</b>Text file: scene, length in beats, transition, parameters. Hot-reloaded.</div><div class="arrow">→</div>
     <div class="stage"><b>Scenes</b>Each renders linear HDR into its own target (raymarching, meshes, particles).</div><div class="arrow">→</div>
     <div class="stage"><b>Transition</b>A shader per file blends outgoing and incoming scene: crossfade, flash, wipe, dissolve, glitch.</div><div class="arrow">→</div>
-    <div class="stage"><b>Post</b>Bloom mip chain, chromatic aberration, exposure, ACES, vignette, grain, sRGB.</div>
+    <div class="stage"><b>Post</b>Bloom mip chain, chromatic aberration, exposure, ACES, vignette, sRGB, grain.</div>
   </div>
   <div class="two" style="grid-template-columns: 1fr 1.15fr;">
     <div>
@@ -242,8 +242,9 @@
       <h3>The dev overlay</h3>
       <p>Development builds carry a Dear ImGui overlay on top of the demo. It shows frame timings measured with
       GPU timer queries, a time slider that scrubs the whole demo, the timeline with the active entry and its
-      transition, every shader program with its compile status, and per-scene sliders for every tunable — the same
-      names can be written as parameters in the timeline file.</p>
+      transition, every shader program with its compile status, and per-scene sliders. Timeline parameters are
+      supported only where the scene explicitly reads them; their keys can differ from slider labels, and some
+      controls are UI-only. For example, corona supports <em>orbit</em>, <em>scale</em> and <em>snare</em> as timeline keys.</p>
       <h3>Hot reload</h3>
       <p>Shaders are read straight from the source tree with a small <em>#include</em> preprocessor. When a file
       changes on disk the program is rebuilt; if the new version fails to compile the old one keeps running and the
@@ -251,8 +252,8 @@
       scene order, lengths and transitions can be edited while the music plays.</p>
       <h3>Capture</h3>
       <p><em>SpaceTravel --capture frame.png --time 170.88</em> renders the frame at that instant and exits — the
-      pure-time rule makes every capture exactly reproducible. A distribution build turns all of this off and
-      links statically into a single executable.</p>
+      pure-time rule makes captures repeatable with the same settings. A distribution build disables the overlay
+      and hot reload, retains capture support, and links statically into a single executable.</p>
     </div>
   </div>
   <div class="folio">TOOLS</div>
@@ -325,7 +326,7 @@
 <section class="page tech">
   <header><div class="num">02</div><h2>Parallax stars · geometry from gl_VertexID</h2></header>
   <div class="thumbs">
-    <figure><img src="images/hstars-b.jpg" alt=""><figcaption>Near the end the stars accelerate into streaks, handing over to the warp.</figcaption></figure>
+    <figure><img src="images/hstars-b.jpg" alt=""><figcaption>Near the end the stars accelerate into streaks, before the nebula crossing.</figcaption></figure>
     <div class="pull">No vertex buffers: a star is six vertices and a hash.</div>
   </div>
   <div class="cols">
@@ -390,7 +391,7 @@ color = palette(bands) · (0.015 + 1.5·max(n·L, 0)) · limb + rimGlow</pre>
       <ul>
         <li><b>Self-shadowing</b>: at every sample a short march toward the cluster accumulates dust; that is what carves the light shafts and darkens the pillars' cores.</li>
         <li><b>Henyey–Greenstein</b> forward scattering lights the edges when looking toward the light.</li>
-        <li><b>Energy-conserving integration</b>: each step adds <em>S·(1−e<sup>−σΔt</sup>)/σ</em>, so results don't depend on the step size.</li>
+        <li><b>Energy-conserving integration</b>: each step adds <em>S·(1−e<sup>−σΔt</sup>)/σ</em>, exact for constant σ and S within that step. Varying density and lighting still cause sampling error.</li>
         <li><b>Hubble palette</b>: gas glows teal near the cluster and gold further out.</li>
         <li>Sky and cluster glow are added at full resolution, dimmed by the volume's transmittance.</li>
       </ul>
@@ -436,7 +437,7 @@ composite: (stars + clusterGlow) · T + L</pre>
   <header><div class="num">04</div><h2>Warp · motion blur as an effect</h2></header>
   <div class="thumbs">
     <figure><img src="images/warp-a.jpg" alt=""><figcaption>Cruise speed, just before the acceleration.</figcaption></figure>
-    <div class="pull">Streaks are motion blur — from where the star was to where it is.</div>
+    <div class="pull">Streaks approximate motion blur using speed, shutter time and perspective.</div>
   </div>
   <div class="cols">
     <div>
@@ -444,7 +445,7 @@ composite: (stars + clusterGlow) · T + L</pre>
       position is a pure function of the <b>distance travelled</b>, itself the integral of a speed curve that ramps
       from cruise to forty times faster.</p>
       <ul>
-        <li><b>Streaks are motion blur</b>: each quad spans from where the star was <em>shutter</em> seconds ago to where it is now, so faster means longer, perspective included.</li>
+        <li><b>Streaks approximate motion blur</b>: each tail uses current speed × shutter time, with the same roll as the head. Faster means longer, with perspective, without reconstructing the earlier camera pose.</li>
         <li>Brightness falls with distance and is divided by streak length — long streaks keep their energy.</li>
         <li>The <b>tunnel</b> behind is noise in polar coordinates: depth = 1/r, high angular frequency against low depth frequency makes radial streaks. It fades in with the hyperspace factor; the stars shift blue.</li>
         <li>The roll angle is also integrated, so the spin accelerates smoothly.</li>
@@ -591,7 +592,8 @@ sum += isSky(depth(p)) · glow(|p − starUV|) · decayᵏ</pre>
   <div class="cols">
     <div>
       <p>The planet and the ring disc are raytraced analytically in one pass, which also <b>writes depth</b>. Ice chunks
-      near the camera are rasterized afterwards and depth-tested against it, so both worlds intersect correctly.</p>
+      near the camera are rasterized afterwards and depth-tested against it. Ring opacity above 0.5 writes depth,
+      an approximation that lets dense parts of the sheet occlude chunks.</p>
       <ul>
         <li><b>Ring profile</b>: radial opacity built from a base curve, fine ringlets and two gaps.</li>
         <li><b>Shadows both ways</b>: rings in the planet's shadow cylinder go dark; points on the planet test where their ray to the sun crosses the ring plane.</li>
@@ -604,12 +606,14 @@ sum += isSky(depth(p)) · glow(|p − starUV|) · decayᵏ</pre>
     <span class="k">if</span> tPlanet hit:
         p = hit;  color = bands(p) · sun · max(n·L, 0) · <span class="f">ringShadow</span>(p)
         <span class="c">// ringShadow: s = −p.y/L.y; 1 − opacity(|(p + L·s).xz|)·0.9</span>
-    <span class="k">if</span> tRing &gt; 0 <span class="k">and</span> tRing &lt; tPlanet:
+    <span class="k">if</span> tRing &gt; 0 <span class="k">and</span> (planet missed <span class="k">or</span> tRing &lt; tPlanet):
         r = |hit.xz|;  α = opacity(r) · smoothstep(nearFade·0.35, nearFade, tRing)
         face = sameSideAsSun ? albedo·sun·(0.25 + 0.75|L.y|)
                              : albedo·sun·(1 − α)·forwardScatter(rd·L)
         color = mix(color, face · <span class="f">planetShadow</span>(hit), α)
-    gl_FragDepth = depth(nearest opaque hit)
+    depth = planet hit ? projectedDepth(tPlanet) : 1
+    <span class="k">if</span> ring is in front <span class="k">and</span> α &gt; 0.5: depth = projectedDepth(tRing)
+    gl_FragDepth = depth
 
 <span class="c">// CPU, each frame near the ring plane</span>
 <span class="k">for each</span> cell (2.5 units) within 70 of the camera:
@@ -795,7 +799,7 @@ color = albedo(plate, grime) · (sun·N·L·PCF + planetBounce + ambient)·AO
       <p>A three-act scene timed to the music: the giant grows unstable, collapses in the last second, and the
       flash lands exactly on beat 16. The shell is then raymarched at half resolution.</p>
       <ul>
-        <li><b>Self-similar expansion</b>: the noise is sampled at <em>p / R</em>, so the structure grows with the shell instead of sliding through it.</li>
+        <li><b>Approximately self-similar expansion</b>: noise uses <em>p / max(R, 1)</em>, stabilizing the start. It grows with R above 1, but thickness <em>0.22R + 1</em> changes the shell's relative shape.</li>
         <li><b>Wrinkled front</b>: the shock radius varies with direction — Rayleigh–Taylor-like fingers.</li>
         <li><b>Temperature</b>: blue-white at the front, cooling to hydrogen pink and oxygen teal filaments (cell noise) inside.</li>
         <li>An <b>equatorial ring</b> flares, a <b>pulsar</b>'s beams sweep the gas, 4000 debris streaks ride outward; the camera shakes and pulls back.</li>
@@ -803,15 +807,16 @@ color = albedo(plate, grime) · (sun·N·L·PCF + planetBounce + ambient)·AO
     </div>
     <pre class="code">flash at t₀ = duration/3;   s = t − t₀
 starRadius = 22 · pulse(t) · (1 − smoothstep(t₀ − 1.2, t₀, t))
-R(s)       = 150·(1 − e^(−0.25s)) + 1.5s
-flashLight = 12·e^(−2.5s);   shake = 2.5·e^(−2s)
+R(s)       = s &gt; 0 ? 150·(1 − e^(−0.25s)) + 1.5s : 0
+flashLight = s ≥ 0 ? 12·e^(−2.5s) : 0
+shake      = s &gt; 0 ? 2.5·e^(−2s) : 0
 
-<span class="c">// shell march inside the sphere 1.35R</span>
+<span class="c">// when R &gt; 0: march inside the sphere 1.35R + 5</span>
 <span class="k">for each</span> step p:
     front    = R · (1 + 0.2·(noise(dir(p)·0.9) − ½))
     x        = (|p| − front) / (0.22R + 1)      <span class="c">// 0 at the front</span>
     profile  = smoothstep(0.15, 0, x) · smoothstep(−1.4, −0.2, x)
-    q        = p / R                               <span class="c">// expands with R</span>
+    q        = p / max(R, 1)                        <span class="c">// early-size guard</span>
     density  = profile · (0.06 + 1.6·smoothstep(.55, .85, worley(q·1.6)))
     heat     = smoothstep(−0.5, 0.1, x)
     emission = mix(mix(pink, teal, noise(q)), blueWhite·3, heat) · density
@@ -848,7 +853,7 @@ flashLight = 12·e^(−2.5s);   shake = 2.5·e^(−2s)
         <li><b>Through the mouth</b> (<em>b &lt; R</em>): the ray exits into the other universe, rotated more and more toward the rim, so the disc shows the whole far sky with multiple images at its edge.</li>
         <li><b>Outside</b>: the ray is bent around the mouth, lensing our own sky — including the pink remnant of the supernova we just left.</li>
         <li><b>The other sky</b> holds a face-on spiral galaxy: logarithmic-spiral arms in a gnomonic projection — the next destination.</li>
-        <li><b>Gas vortex</b>: a shell of noise rotating faster near the rim. The tunnel uses the noise volume's periodicity to wrap seamlessly around its circumference.</li>
+        <li><b>Gas vortex</b>: a noise shell rotating at one angular speed, with a stronger static angular twist near the mouth. The tunnel wraps seamlessly using the noise volume's periodicity.</li>
       </ul>
     </div>
     <pre class="code">tc = −ro·rd;   c = ro + rd·tc;   b = |c|;   out = c / b
@@ -896,14 +901,15 @@ q = rotate(p.xy, 0.4t + 3R/|p|);  density = shell(|p|)·cloud(noise3D(q))
       through the arms while the pattern itself turns slowly.</p>
       <ul>
         <li>Each star is one vertex (<em>GL_POINTS</em>) whose attributes all come from integer PCG hashes of its id — exact for millions of ids.</li>
-        <li>Point size shrinks with distance and brightness is divided by size, so a star's light stays constant.</li>
+        <li>Point size shrinks with distance; dividing brightness by size reduces its growth. This is not energy conservation: the sprite's area grows as size², so total light still grows roughly with size.</li>
         <li><b>Gas</b> puffs are added; <b>dust</b> puffs trail the arms and are multiplied into the image (<em>dst ·= 1 − src</em>), carving dark lanes.</li>
         <li>A background pass adds disc haze where the ray crosses the galactic plane, and a flattened core glow.</li>
       </ul>
     </div>
     <pre class="code"><span class="c">// vertex shader, star id</span>
 bulge = hashU(id, 1) &lt; 0.18
-a     = bulge ? 14·u^1.6 : −28·ln(1 − u·(1 − e^(−110/28)))   <span class="c">// exp. disc</span>
+a     = bulge ? 14·u^1.6 : −28·ln(1 − u·(1 − e^(−110/28)))
+<span class="c">// truncated exponential semi-major axes, not surface density</span>
 k(a)  = axis ratio: 0.6 in the core → 0.82 → 0.95 at the rim
 φ     = phase(id) + v/(a + 3) · t                <span class="c">// flat rotation curve</span>
 e     = (a·cos φ,  a·k(a)·sin φ)
@@ -941,7 +947,7 @@ core    = closestApproach in squashed frame (y·2.5) → e^(−r/5) + e^(−r/16
       approximation <em>a = −1.5 h² x / r⁵</em>, where <em>h</em> is the ray's angular momentum. No special cases are
       written for the effects: they emerge from the integration.</p>
       <ul>
-        <li><b>Shadow</b>: rays that fall below the horizon stay black.</li>
+        <li><b>Shadow</b>: captured rays receive no background sky; disk and jet emission gathered before capture remains visible.</li>
         <li><b>The Interstellar arc</b>: rays bent over the top hit the far side of the disk.</li>
         <li><b>Photon ring</b>: rays that orbit and cross the disk several times.</li>
         <li><b>Disk</b>: thin-disk temperature profile; turbulence in a co-rotating frame with Keplerian speeds that wind it into spirals; hot spots flaring on the snare.</li>
@@ -949,9 +955,10 @@ core    = closestApproach in squashed frame (y·2.5) → e^(−r/5) + e^(−r/16
       </ul>
     </div>
     <pre class="code">pos = camera;  dir = rd;  h² = |pos × dir|²
+color = 0;  α = 0;  captured = false
 <span class="k">repeat</span> up to N steps:
     r = |pos|
-    <span class="k">if</span> r &lt; 1: <span class="k">return</span> black                 <span class="c">// captured</span>
+    <span class="k">if</span> r &lt; 1: captured = true; <span class="k">break</span>       <span class="c">// retain gathered light</span>
     <span class="k">if</span> escaping: <span class="k">break</span>
     dt   = clamp(0.12·(r − 1), 0.012, 1.5)
     dir += −1.5 · h² · pos / r⁵ · lensing · dt
@@ -968,7 +975,8 @@ core    = closestApproach in squashed frame (y·2.5) → e^(−r/5) + e^(−r/16
             c    = blackbody(T·shift·temp) · T² · shift³ · (0.4 + 1.6·turb + spots)
             color += (1 − α)·c·a;  α += (1 − α)·a   <span class="c">// front to back</span>
     jets(pos)                                    <span class="c">// optional polar glow</span>
-color += (1 − α) · lensedBackground(dir)</pre>
+<span class="k">if not</span> captured <span class="k">and</span> α &lt; 0.99:
+    color += (1 − α) · lensedBackground(normalize(dir))</pre>
   </div>
   <div class="knobs">Tunables: <span>inclination</span><span>distance</span><span>lensing</span><span>doppler</span><span>disk radii</span><span>temperature</span><span>jets</span><span>quality</span></div>
   <div class="folio">BLACK HOLE</div>
@@ -1043,9 +1051,11 @@ cell = (x − columnLeft(line)) / pixelSize
       every octave uses a period that divides the volume, hashing coordinates <em>modulo the period</em>, so the
       texture tiles seamlessly in all three directions and hardware trilinear filtering does the rest.</p>
       <h3>Integrating a volume</h3>
-      <p>All marched media use the same step: emission and in-scattered light <em>S</em>, extinction <em>σ</em>.
-      Integrating analytically over a step of constant medium keeps results independent of the step count, and a
-      per-pixel jitter of the start turns banding into fine grain hidden by the film grain.</p>
+      <p>The pillars integrate emission and in-scattered light <em>S</em> analytically within each step, assuming
+      constant extinction <em>σ</em> and source <em>S</em>. This removes the plain sum's brightness bias for a uniform
+      medium; varying density, lighting and shadows still introduce step-count-dependent sampling error.</p>
+      <p>Canyon dust, supernova gas and wormhole gas instead use a simpler <em>T · source · Δt</em> sum, followed by
+      exponential attenuation. These four passes jitter the start per pixel to turn banding into fine grain.</p>
       <pre class="code">L += T · S · (1 − e^(−σΔt)) / σ
 T ·= e^(−σΔt)
 HG(cosθ, g) = (1 − g²) / (1 + g² − 2g·cosθ)^1.5    <span class="c">// isotropic = 1</span></pre>

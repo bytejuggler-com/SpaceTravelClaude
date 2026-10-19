@@ -149,7 +149,8 @@ listed at the bottom of the page). Drag the <b>time</b> slider to scrub: like ev
   matrix and color from instanced vertex attributes instead of a storage buffer (WebGL2 has neither storage buffers nor
   <code>gl_BaseInstance</code>); <code>font.glsl</code>'s parameter <code>length</code> is renamed so it doesn't shadow the built-in
   <code>length()</code>; precision qualifiers added. Not reproduced: the demo's post chain (bloom, chromatic aberration, grain —
-  replaced by ACES tone mapping and a glow with the same threshold of 1.0 as the demo's bloom, so only HDR values above 1 glow) and the crossfade from the black hole. The beat pulse uses the 125 BPM grid. The
+  replaced by ACES tone mapping and a glow with a hard threshold of 1.0 on blurred samples) and the crossfade from the black hole.
+  The demo's bloom uses a soft knee, which starts admitting light above a brightness of 0.5 at that threshold. The beat pulse uses the 125 BPM grid. The
   text size follows the shader's rule <code>max(1, floor(height / 220))</code>, so in this smaller canvas a font pixel is 2–3 screen
   pixels instead of 4; the backdrop sizes its stars in screen pixels, so this port sizes them for the demo's 1080-line frame
   (<code>1080</code> instead of <code>uResolution.y</code> in the star pixel angle) to keep them as fine as in the demo.</p>

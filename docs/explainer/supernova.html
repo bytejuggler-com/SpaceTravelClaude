@@ -144,7 +144,7 @@ frame is a pure function of time, scrubbing is just "render the frame for this t
 and the noise generator (a compute shader in the demo) run as a fragment shader, one draw per slice of the same 128³ RG8 3D
 texture, with a floor-based modulo for its tile wrap. One explainer-only switch was added (<code>uJitter</code>), and the sky's stars are sized for the demo's 1080-line frame rather than this smaller canvas, so they keep the same size relative to the picture. The shell's small
 pulse on every beat comes from the music player in the demo; here it is derived from the time. The demo's post-processing chain
-(bloom, chromatic aberration, vignette, grain) is replaced by a simple stand-in: ACES tone mapping plus a glow from blurred copies of the image, thresholded like the demo's bloom so only values above 1.0 glow.</div>
+(bloom, chromatic aberration, vignette, grain) is replaced by a simple stand-in: ACES tone mapping plus a glow with a hard threshold of 1.0 on blurred samples. The demo uses a soft knee, which starts admitting light above a brightness of 0.5 at that threshold.</div>
 
 <h2 id="background">Background</h2>
 <div class="accent"></div>
@@ -310,11 +310,12 @@ gradually over 1.4 thicknesses inside (gas that has already passed through).</p>
 channel thresholded at <code>smoothstep(0.55, 0.85, G)</code> — the blobs of §3 — on top of a thin background
 (<code>0.06</code>), and modulated by the fine R channel:</p>
 <div class="formula">density = profile · (0.06 + 1.6 · smoothstep(0.55, 0.85, G(q·1.6))) · (0.6 + 0.6 · R(q·4.5))</div>
-<p><b>Self-similar expansion.</b> The noise is sampled at <code>q = p / R</code>, not at <code>p</code>. As the shell grows, the
-noise pattern grows with it: a knot at 80 % of the radius stays at 80 % of the radius. Sampling at <code>p</code> instead would make the
-shell slide through a fixed fog — filaments would appear to stream inward through the front. Because the wrinkles depend only on the
-direction and everything else on <code>p / R</code>, the shell's shape is in fact frozen: it is the same pattern scaled up, and only its
-brightness and the camera change over time.</p>
+<p><b>Approximately self-similar expansion.</b> The noise is sampled at <code>q = p / max(R, 1)</code>, not at <code>p</code>.
+Once <code>R ≥ 1</code>, the noise pattern grows with the shell: a noise feature at 80 % of the radius stays at that fraction.
+Sampling at <code>p</code> instead would make the shell slide through a fixed fog — filaments would appear to stream inward through
+the front. The <code>max(R, 1)</code> stabilizes the early expansion, and the shell thickness is <code>0.22·R + 1</code>, so its
+relative thickness changes as it grows. The directional wrinkles and expanding noise give a largely consistent pattern, but the
+complete density field is not an exactly frozen shape scaled up.</p>
 <div class="figure">
   <div class="row">
     <canvas id="figShell" width="400" height="400"></canvas>
@@ -432,8 +433,9 @@ walks it front to back, keeping two running values — the light gathered so far
   <b>Try:</b> raise the <em>absorption</em> to 20×: the far side of the shell disappears behind the near side and the two integration
   steps start to disagree. (Ring and pulsar are left out here.)</div>
 </div>
-<p>After the loop, the neutron star is added as a point glow, <code>exp(−2·impact)·6 + exp(−0.4·impact)·0.3</code>, dimmed by whatever
-gas is in front of it. The shader writes the gathered light as the pixel's color and <code>1 − transmittance</code> as its alpha: how
+<p>After the loop, the neutron star is added as a point glow, <code>exp(−2·impact)·6 + exp(−0.4·impact)·0.3</code>, multiplied by the
+final transmittance from the entire marched interval. After collapse the march can include gas on the far side of the neutron star,
+so this is an approximation: it can dim the glow with gas behind the star as well as gas in front. The shader writes the gathered light as the pixel's color and <code>1 − transmittance</code> as its alpha: how
 much of the background the gas hides.</p>
 
 <!-- ================================================================== 8 HALFRES -->
